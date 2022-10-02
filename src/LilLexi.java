@@ -12,6 +12,7 @@ public class LilLexi
 		if (currentDoc == null)
 			currentDoc = new LilLexiDoc();
 		LilLexiUI lexiUI = new LilLexiUI();
+		currentDoc.setUI(lexiUI);
 		lexiUI.setCurrentDoc( currentDoc );
 		currentDoc.setUI(lexiUI);
 		
