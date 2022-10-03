@@ -26,16 +26,40 @@ public class LilLexiControl
 		currentDoc.draw();
 	}
 	void addRectGlyph(RGB borderColor, RGB fillColor) 
-	{	//System.out.println("adding something");
+	{	System.out.println("adding rectangle");
 		currentDoc.addRectGlyph(borderColor, fillColor);
 		currentDoc.draw();
 	}
 
 	void addRectGlyph(Point endPoint, RGB borderColor, RGB fillColor)
-	{	//System.out.println("adding rectangle glyph");
+	{	System.out.println("adding rectangle glyph");
 		currentDoc.addRectGlyph(endPoint, borderColor, fillColor);
 		currentDoc.draw();
 	}
+	
+	void addTriangleGlyph(RGB borderColor, RGB fillColor) 
+    {   System.out.println("adding tri1");
+        currentDoc.addTriangleGlyph(borderColor, fillColor);
+        currentDoc.draw();
+    }
+	
+	void addTriangleGlyph(Point endPoint, RGB borderColor, RGB fillColor) 
+    {   System.out.println("adding tri2");
+        currentDoc.addTriangleGlyph(endPoint, borderColor, fillColor);
+        currentDoc.draw();
+    }
+	
+	void addCircleGlyph(RGB borderColor, RGB fillColor) 
+    {   //System.out.println("adding something");
+        currentDoc.addCircleGlyph(borderColor, fillColor);
+        currentDoc.draw();
+    }
+
+    void addCircleGlyph(Point endPoint, RGB borderColor, RGB fillColor)
+    {   //System.out.println("adding rectangle glyph");
+        currentDoc.addCircleGlyph(endPoint, borderColor, fillColor);
+        currentDoc.draw();
+    }
 
 	void addImageGlyph( String fileName ) 
 	{	//System.out.println("adding image glyph");

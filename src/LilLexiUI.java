@@ -29,9 +29,15 @@ public class LilLexiUI
 	private int canvasWidth;
 	private int canvasHeight;
 	private Point rectangleEndPosition;
+	private Point circleEndPosition;
+	private Point triangleEndPosition;
 	private RGB fontColor;
 	private RGB rectangleFillColor;
 	private RGB rectangleBorderColor;
+	private RGB triangleFillColor;
+    private RGB triangleBorderColor;
+	private RGB circleFillColor;
+    private RGB circleBorderColor;
 	private boolean darkMode;
 	private String fontName;
 	private int fontSize;
@@ -49,12 +55,22 @@ public class LilLexiUI
 		shell.setSize(810,900);
 		shell.setLayout( new GridLayout());
 		rectangleEndPosition = new Point(10,10);
+		circleEndPosition = new Point(10,10);
+		triangleEndPosition = new Point(10,10);
 		// set default fontColor to blue
 		fontColor = new RGB(0,0,255);
 		// set default rectangleFillColor to transparent
 		rectangleFillColor = new RGB(255,255,255);
 		// set default rectangleBorderColor to black
 		rectangleBorderColor = new RGB(0,0,0);
+		// set default circleFillColor to transparent
+		triangleFillColor = new RGB(255,255,255);
+        // set default circleBorderColor to black
+		triangleBorderColor = new RGB(0,0,0);
+		// set default circleFillColor to transparent
+		circleFillColor = new RGB(255,255,255);
+        // set default circleBorderColor to black
+		circleBorderColor = new RGB(0,0,0);
 		darkMode = false;
 		fontName = "Courier";
 		fontSize = 24;
@@ -101,7 +117,8 @@ public class LilLexiUI
 					e.gc.setFont(f);
 					e.gc.drawString(""+cg.getChar(), cg.getPos().getX(), cg.getPos().getY() + 10);
 				}
-				if (g instanceof RectGlyph) {
+				if (g instanceof RectGlyph) {	
+				    System.out.println("rect");
 					RectGlyph rg = (RectGlyph) g;
 					// set the rectangle fill color
 					e.gc.setBackground(new Color(display, rg.getFillColor()));
@@ -118,6 +135,56 @@ public class LilLexiUI
 						e.gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE)); 
 					}
 				}
+				
+				if (g instanceof TriangleGlyph) {
+				    System.out.println("triangle");
+				    TriangleGlyph tg = (TriangleGlyph) g;
+                    // set the rectangle fill color
+                    e.gc.setBackground(new Color(display, tg.getFillColor()));
+                    // set the rectangle border color
+                    e.gc.setForeground(new Color(display, tg.getBorderColor()));
+                    // make border width 2
+                    e.gc.setLineWidth(2); // without this the border would be default width 1 but not visible when filled for some reason. TODO: decide what to do
+                    int x1= tg.getPos().getX() + (tg.getWidth()/2);
+                    int y1= tg.getPos().getY() + 10;
+                    
+                    int x2= tg.getPos().getX();
+                    int y2= tg.getPos().getY() + 10 + tg.getHeight();
+                    
+                    int x3= tg.getPos().getX() + tg.getWidth();
+                    int y3= tg.getPos().getY() + 10 + tg.getHeight();
+                    
+                    e.gc.drawPolygon(new int[] {x1,y1,x2,y2,x3,y3});
+                    e.gc.fillPolygon(new int[] {x1,y1,x2,y2,x3,y3});
+                    
+                    
+                    // reset fill color to transparent
+                    if (darkMode) {
+                        e.gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+                    } else {
+                        e.gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE)); 
+                    }
+                }
+				
+				
+				if (g instanceof CircleGlyph) {
+				    CircleGlyph cg = (CircleGlyph) g;
+                    // set the rectangle fill color
+                    e.gc.setBackground(new Color(display, cg.getFillColor()));
+                    // set the rectangle border color
+                    e.gc.setForeground(new Color(display, cg.getBorderColor()));
+                    // make border width 2
+                    e.gc.setLineWidth(2); // without this the border would be default width 1 but not visible when filled for some reason. TODO: decide what to do
+                    e.gc.drawOval(cg.getPos().getX(), cg.getPos().getY() + 10, cg.getRadius(), cg.getRadius());
+                    e.gc.fillOval(cg.getPos().getX(), cg.getPos().getY() + 10, cg.getRadius(), cg.getRadius());
+                    // reset fill color to transparent
+                    if (darkMode) {
+                        e.gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+                    } else {
+                        e.gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE)); 
+                    }
+                }
+				
 				if (g instanceof ImageGlyph) {
 					ImageGlyph ig = (ImageGlyph) g;
 					//e.gc.drawImage(ig.getImage(), ig.getPos().getX(), ig.getPos().getY() + 10);
@@ -138,6 +205,25 @@ public class LilLexiUI
 					rectangleEndPosition.setX(e.x);
 					rectangleEndPosition.setY(e.y);
 				}
+				
+				// change circleEndPosition to the mouse position
+                if (circleEndPosition == null) {
+                    circleEndPosition = new Point(e.x, e.y);
+                }
+                else {
+                    circleEndPosition.setX(e.x);
+                    circleEndPosition.setY(e.y);
+                }
+                
+             // change triangleEndPosition to the mouse position
+                if (triangleEndPosition == null) {
+                    triangleEndPosition = new Point(e.x, e.y);
+                }
+                else {
+                    triangleEndPosition.setX(e.x);
+                    triangleEndPosition.setY(e.y);
+                }
+                
             } 
             public void mouseUp(MouseEvent e) {} 
             public void mouseDoubleClick(MouseEvent e) {} 
@@ -147,6 +233,8 @@ public class LilLexiUI
         	public void keyPressed(KeyEvent e) {
 				// check if key is backspace
 				rectangleEndPosition = null;
+				triangleEndPosition = null;
+				circleEndPosition = null;
 				if (e.keyCode == SWT.BS) {
 					lexiControl.backspace();
 					updateUI();
@@ -196,7 +284,7 @@ public class LilLexiUI
 		//---- main menu
 		Menu menuBar, fileMenu, insertMenu, helpMenu;
 		MenuItem fileMenuHeader, insertMenuHeader, helpMenuHeader, fileExitItem, fileSaveItem, helpGetHelpItem;
-		MenuItem insertImageItem, insertRectItem;
+		MenuItem insertImageItem, insertRectItem, insertCircleItem, insertTriangleItem;
 
 		menuBar = new Menu(shell, SWT.BAR);
 		
@@ -291,6 +379,69 @@ public class LilLexiUI
 				}
 			}
 		});
+		
+		// add a color picker for the triangle fill color
+        MenuItem fileTriangleFillColorItem = new MenuItem(fileMenu, SWT.PUSH);
+        fileTriangleFillColorItem.setText("Triangle Fill Color");
+        fileTriangleFillColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a triangle fill color");
+                cd.setRGB(triangleFillColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    triangleFillColor = newColor;
+                }
+            }
+        });
+
+        // add a color picker for the triangle border color
+        MenuItem fileTriangleBorderColorItem = new MenuItem(fileMenu, SWT.PUSH);
+        fileTriangleBorderColorItem.setText("Triangle Border Color");
+        fileTriangleBorderColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a triangle border color");
+                cd.setRGB(rectangleBorderColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    triangleBorderColor = newColor;
+                }
+            }
+        });
+        
+		
+		// add a color picker for the circle fill color
+        MenuItem fileCircleFillColorItem = new MenuItem(fileMenu, SWT.PUSH);
+        fileCircleFillColorItem.setText("Circle Fill Color");
+        fileCircleFillColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a circle fill color");
+                cd.setRGB(circleFillColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    circleFillColor = newColor;
+                }
+            }
+        });
+        
+     // add a color picker for the circle border color
+        MenuItem fileCircleBorderColorItem = new MenuItem(fileMenu, SWT.PUSH);
+        fileCircleBorderColorItem.setText("Circle Border Color");
+        fileCircleBorderColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a circle border color");
+                cd.setRGB(circleBorderColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    circleBorderColor = newColor;
+                }
+            }
+        });
+
+        
 
 		// add a dark mode toggle
 		MenuItem fileDarkModeItem = new MenuItem(fileMenu, SWT.PUSH);
@@ -315,6 +466,10 @@ public class LilLexiUI
 	    insertImageItem.setText("Image");
 	    insertRectItem = new MenuItem(insertMenu, SWT.PUSH);
 	    insertRectItem.setText("Rectangle");
+	    insertCircleItem = new MenuItem(insertMenu, SWT.PUSH);
+	    insertCircleItem.setText("Circle");
+	    insertTriangleItem = new MenuItem(insertMenu, SWT.PUSH);
+	    insertTriangleItem.setText("Triangle");
 
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -328,6 +483,34 @@ public class LilLexiUI
 				updateUI();
 			}
 		});
+		
+		insertTriangleItem.addSelectionListener(new SelectionAdapter() {
+
+            public void widgetSelected(SelectionEvent e) {
+                if (triangleEndPosition != null) {
+                    lexiControl.addTriangleGlyph(triangleEndPosition, triangleBorderColor, triangleFillColor);
+                    triangleEndPosition = null;
+                    updateUI();
+                    return;
+                }
+                lexiControl.addTriangleGlyph(triangleBorderColor, triangleFillColor); 
+                updateUI();
+            }
+        });
+		
+		insertCircleItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                if (circleEndPosition != null) {
+                    lexiControl.addCircleGlyph(circleEndPosition, circleBorderColor, circleFillColor);
+                    circleEndPosition = null;
+                    updateUI();
+                    return;
+                }
+                lexiControl.addCircleGlyph(circleBorderColor, circleFillColor); 
+                updateUI();
+            }
+        });
+
 
 		// when the user clicks insert image, open a file dialog
 		insertImageItem.addSelectionListener(new SelectionAdapter() {

@@ -30,10 +30,6 @@ public class LilLexiDoc
 	private Point cursorPosition;
 	private Composition composition;
 	private Compositor compositor;
-	private RGB fontColor;
-	private RGB rectangleFillColor;
-	private RGB rectangleBorderColor;
-	
 	/**
 	 * Ctor
 	 */
@@ -47,12 +43,7 @@ public class LilLexiDoc
 		cursorPosition = new Point(0,0);
 		composition = new Composition();
 		compositor = new SimpleCompositor();
-		// set default fontColor to blue
-		fontColor = new RGB(0,0,255);
-		// set default rectangleFillColor to transparent
-		rectangleFillColor = new RGB(255,255,255);
-		// set default rectangleBorderColor to black
-		rectangleBorderColor = new RGB(0,0,0);
+	
 	}
 	
 	/**
@@ -93,6 +84,51 @@ public class LilLexiDoc
 		glyphs.add(rg);
 		composition.add(rg);
 	}
+	
+	/**
+     * add a triangle
+     */
+    public void addTriangleGlyph(RGB borderColor, RGB fillColor)
+    {
+        TriangleGlyph tg = new TriangleGlyph();
+        tg.setFillColor(fillColor);
+        tg.setBorderColor(borderColor);
+        glyphs.add(tg);
+        composition.add(tg);
+    }
+    
+
+    public void addTriangleGlyph(Point endPoint, RGB borderColor, RGB fillColor)
+    {
+        TriangleGlyph tg = new TriangleGlyph();
+        tg.setFillColor(fillColor);
+        tg.setBorderColor(borderColor);
+        tg.setEndPoint(endPoint);
+        glyphs.add(tg);
+        composition.add(tg);
+    }
+	
+	/**
+     * add a circle
+     */
+    public void addCircleGlyph(RGB borderColor, RGB fillColor)
+    {
+        CircleGlyph cg = new CircleGlyph();
+        cg.setFillColor(fillColor);
+        cg.setBorderColor(borderColor);
+        glyphs.add(cg);
+        composition.add(cg);
+    }
+
+    public void addCircleGlyph(Point endPoint, RGB borderColor, RGB fillColor) {
+        CircleGlyph cg = new CircleGlyph();
+        cg.setFillColor(fillColor);
+        cg.setBorderColor(borderColor);
+        cg.setEndPoint(endPoint);
+        glyphs.add(cg);
+        composition.add(cg);
+        
+    }
 
 	/**
 	 * add an image
@@ -317,6 +353,58 @@ class SimpleCompositor implements Compositor
 					cursor.setX(cursor.getX() + rg.getWidth() + 2);
 				}
 			}
+			
+			else if (g instanceof TriangleGlyph)
+            {
+			    TriangleGlyph tg = (TriangleGlyph)g;
+			    tg.setPos(new Point(cursor.getX(), cursor.getY()));
+                // if rectangle has an endPoint, change it's width and height accordingly
+                if (tg.getEndPoint() != null)
+                {
+                    tg.setWidth(tg.getEndPoint().getX() - tg.getPos().getX());
+                    tg.setHeight(tg.getEndPoint().getY() - tg.getPos().getY());
+                }
+                if (yOffSet < tg.getHeight() + 10)
+                {
+                    yOffSet = tg.getHeight() + 10;
+                }
+                if (cursor.getX() + tg.getWidth() > ui.getWidth())
+                {
+                    cursor.setX(0);
+                    cursor.setY(cursor.getY() + yOffSet);
+                    yOffSet = 30;
+                }
+                else
+                {
+                    cursor.setX(cursor.getX() + tg.getWidth() + 2);
+                }
+            }
+			
+			else if (g instanceof CircleGlyph)
+            {
+			    CircleGlyph cg = (CircleGlyph)g;
+			    cg.setPos(new Point(cursor.getX(), cursor.getY()));
+                // if rectangle has an endPoint, change it's width and height accordingly
+                if (cg.getEndPoint() != null)
+                {
+                    cg.setRadius(cg.getEndPoint().getX() - cg.getPos().getX());
+                }
+                if (yOffSet < cg.getRadius() + 10)
+                {
+                    yOffSet = cg.getRadius() + 10;
+                }
+                if (cursor.getX() + cg.getRadius() > ui.getWidth())
+                {
+                    cursor.setX(0);
+                    cursor.setY(cursor.getY() + yOffSet);
+                    yOffSet = 30;
+                }
+                else
+                {
+                    cursor.setX(cursor.getX() + cg.getRadius() + 2);
+                }
+            }
+			
 			else if (g instanceof ImageGlyph)
 			{
 				ImageGlyph ig = (ImageGlyph)g;
@@ -516,6 +604,77 @@ class RectGlyph extends Glyph
 	public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
 	public void setFillColor(RGB fillColor){this.fillColor = fillColor;}
 	
+}
+
+/**
+ * Circle Glyph
+ */
+class CircleGlyph extends Glyph
+{
+    private Point pos;
+    private int radius;
+    private Point endPoint;
+    private RGB fillColor;
+    private RGB borderColor;
+
+    public CircleGlyph() 
+    {
+        super();
+        radius = 60;
+        fillColor = new RGB(255, 255, 255);
+        borderColor = new RGB(0, 0, 0);
+    }
+
+    public void setPos(Point pos){this.pos = pos;}
+    public Point getPos(){return pos;}
+
+
+    public void setRadius(int radius){this.radius = radius;}
+    public int getRadius(){return radius;}
+    public void setEndPoint(Point p) {this.endPoint = p;}
+    public Point getEndPoint() {return this.endPoint;}
+    public RGB getBorderColor(){return borderColor;}
+    public RGB getFillColor(){return fillColor;}
+    public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
+    public void setFillColor(RGB fillColor){this.fillColor = fillColor;}
+    
+}
+
+/**
+ * Triangle Glyph 
+ */
+class TriangleGlyph extends Glyph
+{
+    private Point pos;
+    private int width;
+    private int height;
+    private Point endPoint;
+    private RGB fillColor;
+    private RGB borderColor;
+
+    public TriangleGlyph() 
+    {
+        super();
+        width = 60;
+        height = 60;
+        fillColor = new RGB(255, 255, 255);
+        borderColor = new RGB(0, 0, 0);
+    }
+
+    public void setPos(Point pos){this.pos = pos;}
+    public Point getPos(){return pos;}
+
+    public void setWidth(int width){this.width = width;}
+    public void setHeight(int height){this.height = height;}
+    public int getWidth(){return width;}
+    public int getHeight(){return height;}
+    public void setEndPoint(Point p) {this.endPoint = p;}
+    public Point getEndPoint() {return this.endPoint;}
+    public RGB getBorderColor(){return borderColor;}
+    public RGB getFillColor(){return fillColor;}
+    public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
+    public void setFillColor(RGB fillColor){this.fillColor = fillColor;}
+    
 }
 
 // potentially remove the UI
