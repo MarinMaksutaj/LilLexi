@@ -67,6 +67,12 @@ public class LilLexiControl
 		currentDoc.draw();
 	}
 
+	void addImageGlyph( Point endPoint, String fileName ) 
+	{	//System.out.println("adding image glyph");
+		currentDoc.addImageGlyph(endPoint, fileName);
+		currentDoc.draw();
+	}
+
 	void backspace() 
 	{	//System.out.println("backspacing");
 		currentDoc.backspace();

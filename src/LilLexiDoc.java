@@ -139,6 +139,12 @@ public class LilLexiDoc
 		glyphs.add(ig);
 		composition.add(ig);
 	} 
+	public void addImageGlyph(Point endPoint, String fileName) {
+		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
+		ig.setEndPoint(endPoint);
+		glyphs.add(ig);
+		composition.add(ig);
+	}
 	public List<Glyph> getGlyphs(){return glyphs;}
 	public String getDocName(){return docName;}
 	public int getPageWidth(){return pageWidth;}
@@ -310,21 +316,22 @@ class SimpleCompositor implements Compositor
 
 			if (g instanceof CharGlyph)
 			{
-				if (yOffSet < 30)
-				{
-					yOffSet = 30;
-				}
 				CharGlyph cg = (CharGlyph)g;
+				if (yOffSet < cg.getSize() + 5) 
+				{
+					yOffSet = cg.getSize() + 5;
+				}
+				
 				cg.setPos(new Point(cursor.getX(), cursor.getY()));
-				if (cursor.getX() + 27 > ui.getWidth())
+				if (cursor.getX() + cg.getSize() > ui.getWidth())
 				{
 					cursor.setX(0);
 					cursor.setY(cursor.getY() + yOffSet);
-					yOffSet = 30;
+					yOffSet = cg.getSize() + 5;
 				}
 				else
 				{
-					cursor.setX(cursor.getX() + 17);
+					cursor.setX(cursor.getX() + cg.getSize());
 				}
 				
 			}
@@ -409,6 +416,11 @@ class SimpleCompositor implements Compositor
 			{
 				ImageGlyph ig = (ImageGlyph)g;
 				ig.setPos(new Point(cursor.getX(), cursor.getY()));
+				if (ig.getEndPoint() != null)
+				{
+					ig.setWidth(ig.getEndPoint().getX() - ig.getPos().getX());
+					ig.setHeight(ig.getEndPoint().getY() - ig.getPos().getY());
+				}
 				if (yOffSet < ig.getHeight() + 10)
 				{
 					yOffSet = ig.getHeight() + 10;
@@ -538,6 +550,7 @@ class ImageGlyph extends Glyph
 	private int height;
 	private Image image;
 	private Point pos;
+	private Point endPoint;
 	
 	/**
 	 * Ctor
@@ -562,7 +575,9 @@ class ImageGlyph extends Glyph
 	public void setPos(Point pos){this.pos = pos;}
 	public Point getPos(){return pos;}
 	public void setWidth(int width){this.width = width;}
-	public void setHeight(int height){this.height = height;}	
+	public void setHeight(int height){this.height = height;}
+	public Point getEndPoint(){return endPoint;}
+	public void setEndPoint(Point endPoint){this.endPoint = endPoint;}
 
 }
 

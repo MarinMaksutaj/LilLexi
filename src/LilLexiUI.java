@@ -31,6 +31,7 @@ public class LilLexiUI
 	private Point rectangleEndPosition;
 	private Point circleEndPosition;
 	private Point triangleEndPosition;
+	private Point imageEndPosition;
 	private RGB fontColor;
 	private RGB rectangleFillColor;
 	private RGB rectangleBorderColor;
@@ -223,6 +224,14 @@ public class LilLexiUI
                     triangleEndPosition.setX(e.x);
                     triangleEndPosition.setY(e.y);
                 }
+			// change imageEndPosition to the mouse position
+				if (imageEndPosition == null) {
+					imageEndPosition = new Point(e.x, e.y);
+				}
+				else {
+					imageEndPosition.setX(e.x);
+					imageEndPosition.setY(e.y);
+				}
                 
             } 
             public void mouseUp(MouseEvent e) {} 
@@ -519,6 +528,12 @@ public class LilLexiUI
 				dialog.setFilterExtensions(new String[] {"*.jpg", "*.png", "*.gif"});
 				String result = dialog.open();
 				if (result != null) {
+					if (imageEndPosition != null) {
+						lexiControl.addImageGlyph(imageEndPosition, result);
+						imageEndPosition = null;
+						updateUI();
+						return;
+					}
 					lexiControl.addImageGlyph(result);
 					updateUI();
 				}
