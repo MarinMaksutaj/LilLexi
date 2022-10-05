@@ -3,7 +3,15 @@
  * 
  */
 import java.util.List;
+import java.util.Set;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
@@ -256,6 +264,7 @@ class SimpleCompositor implements Compositor
 	}
 	public void addUI (LilLexiUI ui) {this.ui = ui;}
 	public void backspace (Composition c) {
+		spellCheck(c); // should we put it somewhere else?
 		System.out.println("Size of glyphs " + c.getGlyphs().size());
 		System.out.println("size of previous positions: " + previousPositions.size());
 		System.out.println("size of previous y offsets: " + previousYOffSets.size());
@@ -278,6 +287,7 @@ class SimpleCompositor implements Compositor
 		previousYOffSets.remove(previousYOffSets.size()-1);
 	}
 	public void lineBreak (Composition c) {
+		spellCheck(c);
 		// add a new previous position
 		previousPositions.add(new Point(cursor.getX(), cursor.getY()));
 		// set cursor to next line
@@ -293,6 +303,7 @@ class SimpleCompositor implements Compositor
 	}
 	public void compose(Composition c)
 	{
+	    spellCheck(c);
 		List<Glyph> glyphs = c.getGlyphs();
 		//System.out.println(glyphs.size());
 		//System.out.println(cursor.getX());
@@ -331,7 +342,7 @@ class SimpleCompositor implements Compositor
 				}
 				else
 				{
-					cursor.setX(cursor.getX() + cg.getSize());
+					cursor.setX(cursor.getX() + cg.getSize() - cg.getSize()/4);
 				}
 				
 			}
@@ -438,6 +449,49 @@ class SimpleCompositor implements Compositor
 			}
 		}
 	}
+
+	public void spellCheck(Composition c)
+	{
+		
+		//TODO: implement spell check
+		List <Glyph> glyphs = c.getGlyphs();
+		// check each glyph
+		// group char glyphs into words, and check each word for spelling correctness
+		// if word is misspelled, set every char glyph in the word to gramaticallyCorrect = false
+		String word = "";
+		for (int i = 0 ; i < glyphs.size() ; i++) {
+			Glyph g = glyphs.get(i);
+			if (g instanceof CharGlyph) {
+				// check if char glyph is a whitespace. If it is, then it is the end of a word. If it is not, then continue adding to the word
+				CharGlyph cg = (CharGlyph)g;
+				if (cg.getChar() == ' ') {
+					// check if word is misspelled
+					System.out.println(word);
+					if (word.length() > 0 && !SpellChecker.getInstance().isCorrect(word)) {
+						// set every char glyph in the word to gramaticallyCorrect = false
+						for (int j = i - word.length() ; j < i ; j++) {
+							if (glyphs.get(j) instanceof CharGlyph) {
+								CharGlyph cg2 = (CharGlyph)glyphs.get(j);
+								cg2.setGramaticallyCorrect(false);
+							}
+						}
+					} else {
+						// set every char glyph in the word to gramaticallyCorrect = true
+						for (int j = i - word.length() ; j < i ; j++) {
+							if (glyphs.get(j) instanceof CharGlyph) {
+								CharGlyph cg2 = (CharGlyph)glyphs.get(j);
+								cg2.setGramaticallyCorrect(true);
+							}
+						}
+					}
+					word = "";
+				}
+				else {
+					word += cg.getChar();
+				}
+			}
+		}
+	}
 }
 
 
@@ -513,6 +567,7 @@ class CharGlyph extends Glyph
 	private RGB color;
 	private String font;
 	private int size;
+	private boolean gramaticallyCorrect;
 	
 	/**
 	 * Ctor
@@ -521,6 +576,7 @@ class CharGlyph extends Glyph
 	{
 		super();
 		this.c = c;
+		this.gramaticallyCorrect = true;
 	}
 
 	public void setPos(Point pos){this.pos = pos;}
@@ -531,6 +587,8 @@ class CharGlyph extends Glyph
 	public void setFont(String font){this.font = font;}
 	public int getSize(){return size;}
 	public void setSize(int size){this.size = size;}
+	public void setGramaticallyCorrect(boolean b){this.gramaticallyCorrect = b;}
+	public boolean getGramaticallyCorrect() {return gramaticallyCorrect; }
 	
 	/**
 	 * gets
@@ -692,5 +750,61 @@ class TriangleGlyph extends Glyph
     
 }
 
-// potentially remove the UI
 
+class SpellChecker 
+{
+	private static SpellChecker instance = null;
+	
+	private static final String DICTIONARY = "dictionary.txt";
+	private Set<String> dict;
+	
+	public static SpellChecker getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new SpellChecker();
+		}
+		return instance;
+	}
+	
+	private SpellChecker() {
+		dict = new HashSet<String>();
+		// open the dictionary
+				FileInputStream fis = null;
+				try 
+				{
+					fis = new FileInputStream(DICTIONARY);
+				} 
+				catch (FileNotFoundException e) 
+				{
+					e.printStackTrace();
+				}
+				BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+				String line = null;
+				try 
+				{
+					while ((line = br.readLine()) != null) 
+					{
+						dict.add(line.trim().toLowerCase());
+					}
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+	}
+	
+	public boolean isCorrect(String word)
+	{
+		// strip out punctuation at the end of the word
+		if (word.length() > 0)
+		{
+			char lastChar = word.charAt(word.length() - 1);
+			if (!Character.isLetter(lastChar))
+			{
+				word = word.substring(0, word.length() - 1);
+			}
+		}
+		return dict.contains(word.toLowerCase());	
+	}
+}

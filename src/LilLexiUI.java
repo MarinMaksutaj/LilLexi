@@ -42,6 +42,7 @@ public class LilLexiUI
 	private boolean darkMode;
 	private String fontName;
 	private int fontSize;
+	private boolean spellCheck;
 	
 	/**
 	 * Ctor
@@ -75,6 +76,7 @@ public class LilLexiUI
 		darkMode = false;
 		fontName = "Courier";
 		fontSize = 24;
+		spellCheck = false;
 	}
 	
 	public int getWidth() {return this.canvasWidth;}
@@ -116,7 +118,13 @@ public class LilLexiUI
 					e.gc.setForeground(new Color(display, cg.getColor()));
 					Font f = new Font(display, cg.getFont(), cg.getSize(), SWT.BOLD);
 					e.gc.setFont(f);
-					e.gc.drawString(""+cg.getChar(), cg.getPos().getX(), cg.getPos().getY() + 10);
+					// if the char is gramatically incorrect, draw a red line under it
+					if (!cg.getGramaticallyCorrect() && spellCheck) { // TODO: maybe a prettier way to do this
+						e.gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+						e.gc.drawLine(cg.getPos().getX(), cg.getPos().getY() + cg.getSize(), 
+								cg.getPos().getX() + cg.getSize(), cg.getPos().getY() + cg.getSize() + 5);
+					}
+					e.gc.drawString(""+cg.getChar(), cg.getPos().getX(), cg.getPos().getY() + 5); // 5 is so that chars don't overlap with end of rect
 				}
 				if (g instanceof RectGlyph) {	
 				    System.out.println("rect");
@@ -240,6 +248,10 @@ public class LilLexiUI
         
         canvas.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent e) {
+				// if key is SHIFT or CTRL or ALT or CAPS_LOCK or NUM_LOCK or SCROLL_LOCK or INSERT, ignore
+				if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CTRL || e.keyCode == SWT.ALT || e.keyCode == SWT.CAPS_LOCK || e.keyCode == SWT.NUM_LOCK || e.keyCode == SWT.SCROLL_LOCK || e.keyCode == SWT.INSERT) {
+					return;
+				}
 				// check if key is backspace
 				rectangleEndPosition = null;
 				triangleEndPosition = null;
@@ -479,12 +491,17 @@ public class LilLexiUI
 	    insertCircleItem.setText("Circle");
 	    insertTriangleItem = new MenuItem(insertMenu, SWT.PUSH);
 	    insertTriangleItem.setText("Triangle");
+		MenuItem spellCheckItem = new MenuItem(insertMenu, SWT.PUSH);
+		spellCheckItem.setText("Spell Checker");
 
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (rectangleEndPosition != null) {
 					lexiControl.addRectGlyph(rectangleEndPosition, rectangleBorderColor, rectangleFillColor);
 					rectangleEndPosition = null;
+					triangleEndPosition = null;
+					circleEndPosition = null;
+					imageEndPosition = null; // TODO: find a better way to do this
 					updateUI();
 					return;
 				}
@@ -499,6 +516,9 @@ public class LilLexiUI
                 if (triangleEndPosition != null) {
                     lexiControl.addTriangleGlyph(triangleEndPosition, triangleBorderColor, triangleFillColor);
                     triangleEndPosition = null;
+					rectangleEndPosition = null;
+					circleEndPosition = null;
+					imageEndPosition = null; // TODO: find a better way to do this
                     updateUI();
                     return;
                 }
@@ -512,6 +532,9 @@ public class LilLexiUI
                 if (circleEndPosition != null) {
                     lexiControl.addCircleGlyph(circleEndPosition, circleBorderColor, circleFillColor);
                     circleEndPosition = null;
+					rectangleEndPosition = null;
+					triangleEndPosition = null;
+					imageEndPosition = null; // TODO: find a better way to do this
                     updateUI();
                     return;
                 }
@@ -531,6 +554,9 @@ public class LilLexiUI
 					if (imageEndPosition != null) {
 						lexiControl.addImageGlyph(imageEndPosition, result);
 						imageEndPosition = null;
+						rectangleEndPosition = null;
+						triangleEndPosition = null;
+						circleEndPosition = null;
 						updateUI();
 						return;
 					}
@@ -580,6 +606,7 @@ public class LilLexiUI
 					image.dispose();
 	    		}
 	    	}
+
 	    	public void widgetDefaultSelected(SelectionEvent event) {
 	    		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 	    		dialog.setFilterExtensions(new String[] {"*.png"});
@@ -598,6 +625,18 @@ public class LilLexiUI
 	    		}
 	    	}    		
 	    });
+
+		// Spell check menu item. Toggle spell check on and off.
+		spellCheckItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (spellCheck) {
+					spellCheck = false;
+				} else {
+					spellCheck = true;
+				}
+				updateUI();
+			}
+		});
 
 	    helpGetHelpItem.addSelectionListener(new SelectionListener() {
 	    	public void widgetSelected(SelectionEvent event) {
