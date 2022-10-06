@@ -92,12 +92,13 @@ public class LilLexiUI
 	    Composite lowerComp = new Composite(shell, SWT.NO_FOCUS);
 	    
 	    //---- canvas for the document
-		canvas = new Canvas(upperComp, SWT.NONE);
+		canvas = new Canvas(upperComp, SWT.V_SCROLL);
 		canvasWidth = 800;
 		canvasHeight = 800;
 		canvas.setSize(canvasWidth, canvasHeight);
 
 		canvas.addPaintListener(e -> {
+		    int vSelection = canvas.getVerticalBar().getSelection();
 			System.out.println("PaintListener");
 			Rectangle rect = shell.getClientArea();
 			if (darkMode) {
@@ -121,10 +122,10 @@ public class LilLexiUI
 					// if the char is gramatically incorrect, draw a red line under it
 					if (!cg.getGramaticallyCorrect() && spellCheck) { // TODO: maybe a prettier way to do this
 						e.gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
-						e.gc.drawLine(cg.getPos().getX(), cg.getPos().getY() + cg.getSize(), 
-								cg.getPos().getX() + cg.getSize(), cg.getPos().getY() + cg.getSize() + 5);
+						e.gc.drawLine(cg.getPos().getX(), cg.getPos().getY() + cg.getSize() - vSelection + 5, 
+								cg.getPos().getX() + cg.getSize(), cg.getPos().getY() + cg.getSize() - vSelection + 5);
 					}
-					e.gc.drawString(""+cg.getChar(), cg.getPos().getX(), cg.getPos().getY() + 5); // 5 is so that chars don't overlap with end of rect
+					e.gc.drawString(""+cg.getChar(), cg.getPos().getX(), cg.getPos().getY() + 5 - vSelection); // 5 is so that chars don't overlap with end of rect
 				}
 				if (g instanceof RectGlyph) {	
 				    System.out.println("rect");
@@ -135,8 +136,8 @@ public class LilLexiUI
 					e.gc.setForeground(new Color(display, rg.getBorderColor()));
 					// make border width 2
 					e.gc.setLineWidth(2); // without this the border would be default width 1 but not visible when filled for some reason. TODO: decide what to do
-					e.gc.drawRectangle(rg.getPos().getX(), rg.getPos().getY() + 10, rg.getWidth(), rg.getHeight());
-					e.gc.fillRectangle(rg.getPos().getX(), rg.getPos().getY() + 10, rg.getWidth(), rg.getHeight());
+					e.gc.drawRectangle(rg.getPos().getX(), rg.getPos().getY() + 10 - vSelection , rg.getWidth(), rg.getHeight());
+					e.gc.fillRectangle(rg.getPos().getX(), rg.getPos().getY() + 10 - vSelection , rg.getWidth(), rg.getHeight());
 					// reset fill color to transparent
 					if (darkMode) {
 						e.gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -163,8 +164,8 @@ public class LilLexiUI
                     int x3= tg.getPos().getX() + tg.getWidth();
                     int y3= tg.getPos().getY() + 10 + tg.getHeight();
                     
-                    e.gc.drawPolygon(new int[] {x1,y1,x2,y2,x3,y3});
-                    e.gc.fillPolygon(new int[] {x1,y1,x2,y2,x3,y3});
+                    e.gc.drawPolygon(new int[] {x1,y1 - vSelection ,x2,y2 - vSelection ,x3,y3 - vSelection });
+                    e.gc.fillPolygon(new int[] {x1,y1 - vSelection ,x2,y2 - vSelection ,x3,y3 - vSelection });
                     
                     
                     // reset fill color to transparent
@@ -184,8 +185,8 @@ public class LilLexiUI
                     e.gc.setForeground(new Color(display, cg.getBorderColor()));
                     // make border width 2
                     e.gc.setLineWidth(2); // without this the border would be default width 1 but not visible when filled for some reason. TODO: decide what to do
-                    e.gc.drawOval(cg.getPos().getX(), cg.getPos().getY() + 10, cg.getRadius(), cg.getRadius());
-                    e.gc.fillOval(cg.getPos().getX(), cg.getPos().getY() + 10, cg.getRadius(), cg.getRadius());
+                    e.gc.drawOval(cg.getPos().getX(), cg.getPos().getY() + 10 - vSelection , cg.getRadius(), cg.getRadius());
+                    e.gc.fillOval(cg.getPos().getX(), cg.getPos().getY() + 10 - vSelection , cg.getRadius(), cg.getRadius());
                     // reset fill color to transparent
                     if (darkMode) {
                         e.gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -198,7 +199,7 @@ public class LilLexiUI
 					ImageGlyph ig = (ImageGlyph) g;
 					//e.gc.drawImage(ig.getImage(), ig.getPos().getX(), ig.getPos().getY() + 10);
 					// draw image with width and height
-					e.gc.drawImage(ig.getImage(), 0, 0, ig.getImage().getBounds().width, ig.getImage().getBounds().height, ig.getPos().getX(), ig.getPos().getY() + 10, ig.getWidth(), ig.getHeight());
+					e.gc.drawImage(ig.getImage(), 0, 0, ig.getImage().getBounds().width, ig.getImage().getBounds().height, ig.getPos().getX(), ig.getPos().getY() + 10 - vSelection , ig.getWidth(), ig.getHeight());
 				}
 			}
 		});	
@@ -274,22 +275,19 @@ public class LilLexiUI
         	public void keyReleased(KeyEvent e) {}
         });
 
-		Slider slider = new Slider (canvas, SWT.VERTICAL);
-		Rectangle clientArea = canvas.getClientArea ();
-		slider.setBounds (clientArea.width - 40, clientArea.y + 10, 32, clientArea.height);
-		slider.addListener (SWT.Selection, event -> {
-			String string = "SWT.NONE";
-			switch (event.detail) {
-				case SWT.DRAG: string = "SWT.DRAG"; break;
-				case SWT.HOME: string = "SWT.HOME"; break;
-				case SWT.END: string = "SWT.END"; break;
-				case SWT.ARROW_DOWN: string = "SWT.ARROW_DOWN"; break;
-				case SWT.ARROW_UP: string = "SWT.ARROW_UP"; break;
-				case SWT.PAGE_DOWN: string = "SWT.PAGE_DOWN"; break;
-				case SWT.PAGE_UP: string = "SWT.PAGE_UP"; break;
-			}
-			System.out.println ("Scroll detail -> " + string);
-		});
+        final ScrollBar vBar = canvas.getVerticalBar();       
+        Rectangle size = canvas.getBounds();
+        vBar.setMaximum(size.height/2);
+        vBar.setMinimum(0);
+		
+        vBar.addListener(SWT.Selection, new Listener() {
+	      public void handleEvent(Event e) {
+	        canvas.redraw();
+	      }
+	    });
+		
+	
+		  
 		        
         //---- status label
         lowerComp.setLayout(new RowLayout());
