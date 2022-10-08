@@ -85,6 +85,16 @@ public class LilLexiControl
 		currentDoc.draw();
 	}
 
+	void undo() 
+	{	
+		currentDoc.undo();
+	}
+
+	void redo() 
+	{	
+		currentDoc.redo();
+	}
+
 	/**
 	 * quitEditor  user quits
 	 */

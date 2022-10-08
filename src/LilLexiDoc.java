@@ -199,6 +199,14 @@ public class LilLexiDoc
 		compositor.compose(composition);
 		
 	}
+
+	public void undo() {
+		compositor.undo(composition);
+	}
+
+	public void redo() {
+		compositor.redo(composition);
+	}
 }
 
 
@@ -239,6 +247,8 @@ interface Compositor
 	public void compose(Composition c);
 	public void backspace(Composition c);
 	public void lineBreak(Composition c);
+	public void undo(Composition c);
+	public void redo (Composition c);
 }
 
 /**
@@ -262,6 +272,32 @@ class SimpleCompositor implements Compositor
 		this.yOffSet = 30;
 		this.previousYOffSets = new ArrayList<Integer>();
 	}
+
+	public void undo (Composition c) {
+		if (!TimeMachine.getInstance().canUndo()) {
+			return;
+		}
+		System.out.println("undoin");
+		TimeMachine.getInstance().undo();
+		this.cursor = TimeMachine.getInstance().getCursor();
+		this.yOffSet = TimeMachine.getInstance().getYOffSet();
+		this.previousPositions = TimeMachine.getInstance().getPreviousPositions();
+		this.previousYOffSets = TimeMachine.getInstance().getPreviousYOffSets();
+		c.setGlyphs(TimeMachine.getInstance().getGlyphs());
+	}
+
+	public void redo (Composition c) {
+		if (!TimeMachine.getInstance().canRedo()) {
+			return;
+		}
+		TimeMachine.getInstance().redo();
+		this.cursor = TimeMachine.getInstance().getCursor();
+		this.yOffSet = TimeMachine.getInstance().getYOffSet();
+		this.previousPositions = TimeMachine.getInstance().getPreviousPositions();
+		this.previousYOffSets = TimeMachine.getInstance().getPreviousYOffSets();
+		c.setGlyphs(TimeMachine.getInstance().getGlyphs());
+	}
+
 	public void addUI (LilLexiUI ui) {this.ui = ui;}
 	public void backspace (Composition c) {
 		spellCheck(c); // should we put it somewhere else?
@@ -285,6 +321,8 @@ class SimpleCompositor implements Compositor
 		yOffSet = lastYOffSet;
 		// remove last y offset
 		previousYOffSets.remove(previousYOffSets.size()-1);
+		// add previous state in TimeMachine
+		TimeMachine.getInstance().addState(cursor, previousPositions, yOffSet, previousYOffSets, c.getGlyphs());
 	}
 	public void lineBreak (Composition c) {
 		spellCheck(c);
@@ -300,6 +338,8 @@ class SimpleCompositor implements Compositor
 		c.getGlyphs().add(emptySpace);
 		cursor = new Point(0, cursor.getY() + yOffSet);
 		this.yOffSet = 30;
+		// add previous state in TimeMachine
+		TimeMachine.getInstance().addState(cursor, previousPositions, yOffSet, previousYOffSets, c.getGlyphs());
 	}
 	public void compose(Composition c)
 	{
@@ -448,6 +488,8 @@ class SimpleCompositor implements Compositor
 				}
 			}
 		}
+		// add previous state in TimeMachine
+		TimeMachine.getInstance().addState(cursor, previousPositions, yOffSet, previousYOffSets, c.getGlyphs());
 	}
 
 	public void spellCheck(Composition c)
@@ -555,6 +597,10 @@ class Composition
 
 	public void  removeLast() {
 		glyphs.remove(glyphs.size() - 1);
+	}
+
+	public void setGlyphs(List<Glyph> glyphs) {
+		this.glyphs = glyphs;
 	}
 
 }
@@ -811,5 +857,160 @@ class SpellChecker
 			}
 		}
 		return dict.contains(word.toLowerCase());	
+	}
+}
+
+
+/**
+ * This class is used to implement the redo and undo functionality
+ */
+class TimeMachine {
+
+	private List<Point> cursors;
+	private List<List<Point>> previousPositions_lists;
+	private List<Integer> yOffSets;
+	private List<List<Integer>> previousYOffSets_lists;
+	private List<List<Glyph>> glyphs_lists;
+	int index;
+	private static TimeMachine instance;
+	
+	public static TimeMachine getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new TimeMachine();
+		}
+		return instance;
+	}
+	
+	private TimeMachine()
+	{
+		cursors = new ArrayList<Point>();
+		previousPositions_lists = new ArrayList<List<Point>>();
+		yOffSets = new ArrayList<Integer>();
+		previousYOffSets_lists = new ArrayList<List<Integer>>();
+		glyphs_lists = new ArrayList<List<Glyph>>();
+		index = 0;
+		// the initial state is the empty document
+		cursors.add(new Point(0, 0));
+		previousPositions_lists.add(new ArrayList<Point>());
+		yOffSets.add(0);
+		previousYOffSets_lists.add(new ArrayList<Integer>());
+		glyphs_lists.add(new ArrayList<Glyph>());
+	}
+
+	public void addState(Point cursor, List<Point> previousPositions, int yOffSet, List<Integer> previousYOffSets, List<Glyph> glyphs)
+	{
+		if (index < cursors.size() - 1) // TODO: problemi eshte ketu
+		{
+			// remove all the states after the current index
+			cursors = cursors.subList(0, index + 1);
+			previousPositions_lists = previousPositions_lists.subList(0, index + 1);
+			yOffSets = yOffSets.subList(0, index + 1);
+			previousYOffSets_lists = previousYOffSets_lists.subList(0, index + 1);
+			glyphs_lists = glyphs_lists.subList(0, index + 1);
+			// perform a deep copy of the lists
+			List<Point> previousPositions_copy = new ArrayList<Point>();
+			for (Point p : previousPositions)
+			{
+				previousPositions_copy.add(new Point(p.getX(), p.getY()));
+			}
+			List<Integer> previousYOffSets_copy = new ArrayList<Integer>();
+			for (Integer i : previousYOffSets)
+			{
+				previousYOffSets_copy.add(new Integer(i));
+			}
+			List<Glyph> glyphs_copy = new ArrayList<Glyph>();
+			for (Glyph g : glyphs)
+			{
+				glyphs_copy.add(g);
+			}
+			// add the new state
+			cursors.add(new Point(cursor.getX(), cursor.getY()));
+			previousPositions_lists.add(previousPositions_copy);
+			yOffSets.add(yOffSet);
+			previousYOffSets_lists.add(previousYOffSets_copy);
+			glyphs_lists.add(glyphs_copy);	
+			index++;
+		}
+		else
+		{
+			// perform a deep copy of the lists
+			List<Point> previousPositions_copy = new ArrayList<Point>();
+			for (Point p : previousPositions)
+			{
+				previousPositions_copy.add(new Point(p.getX(), p.getY()));
+			}
+			List<Integer> previousYOffSets_copy = new ArrayList<Integer>();
+			for (Integer i : previousYOffSets)
+			{
+				previousYOffSets_copy.add(new Integer(i));
+			}
+			List<Glyph> glyphs_copy = new ArrayList<Glyph>();
+			for (Glyph g : glyphs)
+			{
+				glyphs_copy.add(g);
+			}
+			// add the new state
+			cursors.add(new Point(cursor.getX(), cursor.getY()));
+			previousPositions_lists.add(previousPositions_copy);
+			yOffSets.add(yOffSet);
+			previousYOffSets_lists.add(previousYOffSets_copy);
+			glyphs_lists.add(glyphs_copy);	
+			index++;
+		}
+	}
+
+	public void undo()
+	{
+		if (index > 0)
+		{
+			index--;
+		}
+		System.out.println("size undo: " + cursors.size());
+		System.out.println("undo index: " + index);
+	}
+
+	public void redo()
+	{
+		if (index < cursors.size() - 1)
+		{
+			index++;
+		}
+	}
+
+	public Point getCursor()
+	{
+		return cursors.get(index);
+	}
+
+	public List<Point> getPreviousPositions()
+	{
+		return previousPositions_lists.get(index);
+	}
+
+	public int getYOffSet()
+	{
+		return yOffSets.get(index);
+	}
+
+	public List<Integer> getPreviousYOffSets()
+	{
+		return previousYOffSets_lists.get(index);
+	}
+
+	public List<Glyph> getGlyphs()
+	{
+		return glyphs_lists.get(index);
+	}
+
+	public boolean canUndo()
+	{
+		return index > 0;
+	}
+
+	public boolean canRedo()
+	{
+		return index < cursors.size() - 1;
 	}
 }
