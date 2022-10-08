@@ -334,7 +334,7 @@ class SimpleCompositor implements Compositor
 				}
 				
 				cg.setPos(new Point(cursor.getX(), cursor.getY()));
-				if (cursor.getX() + cg.getSize() > ui.getWidth())
+				if (cursor.getX() + cg.getSize() > ui.getWidth() - cg.getSize())
 				{
 					cursor.setX(0);
 					cursor.setY(cursor.getY() + yOffSet);
@@ -464,7 +464,7 @@ class SimpleCompositor implements Compositor
 			if (g instanceof CharGlyph) {
 				// check if char glyph is a whitespace. If it is, then it is the end of a word. If it is not, then continue adding to the word
 				CharGlyph cg = (CharGlyph)g;
-				if (cg.getChar() == ' ') {
+				if (cg.getChar() == ' ' || cg.getChar() == '\0') {
 					// check if word is misspelled
 					System.out.println(word);
 					if (word.length() > 0 && !SpellChecker.getInstance().isCorrect(word)) {
@@ -800,9 +800,14 @@ class SpellChecker
 		if (word.length() > 0)
 		{
 			char lastChar = word.charAt(word.length() - 1);
+			char firstChar = word.charAt(0);
 			if (!Character.isLetter(lastChar))
 			{
 				word = word.substring(0, word.length() - 1);
+			}
+			if (!Character.isLetter(firstChar))
+			{
+				word = word.substring(1, word.length());
 			}
 		}
 		return dict.contains(word.toLowerCase());	
