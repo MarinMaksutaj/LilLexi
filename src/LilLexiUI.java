@@ -519,16 +519,9 @@ public class LilLexiUI
 
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (rectangleEndPosition != null) {
-					lexiControl.addRectGlyph(rectangleEndPosition, rectangleBorderColor, rectangleFillColor);
-					rectangleEndPosition = null;
-					triangleEndPosition = null;
-					circleEndPosition = null;
-					imageEndPosition = null;
-					updateUI();
-					return;
-				}
-				lexiControl.addRectGlyph(rectangleBorderColor, rectangleFillColor); 
+			    InputDialog dialog = new InputDialog(shell);
+			    Integer size = dialog.open();
+				lexiControl.addRectGlyph(rectangleBorderColor, rectangleFillColor, size); 
 				updateUI();
 			}
 		});
@@ -536,32 +529,18 @@ public class LilLexiUI
 		insertTriangleItem.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent e) {
-                if (triangleEndPosition != null) {
-                    lexiControl.addTriangleGlyph(triangleEndPosition, triangleBorderColor, triangleFillColor);
-                    triangleEndPosition = null;
-					rectangleEndPosition = null;
-					circleEndPosition = null;
-					imageEndPosition = null; 
-                    updateUI();
-                    return;
-                }
-                lexiControl.addTriangleGlyph(triangleBorderColor, triangleFillColor); 
+                InputDialog dialog = new InputDialog(shell);
+                Integer size = dialog.open();
+                lexiControl.addTriangleGlyph(triangleBorderColor, triangleFillColor, size); 
                 updateUI();
             }
         });
 		
 		insertCircleItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                if (circleEndPosition != null) {
-                    lexiControl.addCircleGlyph(circleEndPosition, circleBorderColor, circleFillColor);
-                    circleEndPosition = null;
-					rectangleEndPosition = null;
-					triangleEndPosition = null;
-					imageEndPosition = null; 
-                    updateUI();
-                    return;
-                }
-                lexiControl.addCircleGlyph(circleBorderColor, circleFillColor); 
+                InputDialog dialog = new InputDialog(shell);
+                Integer size = dialog.open();
+                lexiControl.addCircleGlyph(circleBorderColor, circleFillColor, size); 
                 updateUI();
             }
         });
@@ -570,20 +549,13 @@ public class LilLexiUI
 		// when the user clicks insert image, open a file dialog
 		insertImageItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+			    InputDialog sizeDialog = new InputDialog(shell);
+                Integer size = sizeDialog.open();
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterExtensions(new String[] {"*.jpg", "*.png", "*.gif"});
 				String result = dialog.open();
 				if (result != null) {
-					if (imageEndPosition != null) {
-						lexiControl.addImageGlyph(imageEndPosition, result);
-						imageEndPosition = null;
-						rectangleEndPosition = null;
-						triangleEndPosition = null;
-						circleEndPosition = null;
-						updateUI();
-						return;
-					}
-					lexiControl.addImageGlyph(result);
+					lexiControl.addImageGlyph(result, size);
 					updateUI();
 				}
 			}

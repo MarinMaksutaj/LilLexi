@@ -62,76 +62,48 @@ public class LilLexiDoc
 	/**
 	 * add a rectangle
 	 */
-	public void addRectGlyph(RGB borderColor, RGB fillColor)
+	public void addRectGlyph(RGB borderColor, RGB fillColor, Integer size)
 	{
-		RectGlyph rg = new RectGlyph();
+		RectGlyph rg = new RectGlyph(size);
 		rg.setFillColor(fillColor);
 		rg.setBorderColor(borderColor);
 		composition.add(rg);
 	}
 
-	public void addRectGlyph(Point endPoint, RGB borderColor, RGB fillColor) {
-		RectGlyph rg = new RectGlyph();
-		rg.setFillColor(fillColor);
-		rg.setBorderColor(borderColor);
-		rg.setEndPoint(endPoint);
-		composition.add(rg);
-	}
 	
 	/**
      * add a triangle
      */
-    public void addTriangleGlyph(RGB borderColor, RGB fillColor)
+    public void addTriangleGlyph(RGB borderColor, RGB fillColor, Integer size)
     {
-        TriangleGlyph tg = new TriangleGlyph();
+        TriangleGlyph tg = new TriangleGlyph(size);
         tg.setFillColor(fillColor);
         tg.setBorderColor(borderColor);
         composition.add(tg);
     }
     
-
-    public void addTriangleGlyph(Point endPoint, RGB borderColor, RGB fillColor)
-    {
-        TriangleGlyph tg = new TriangleGlyph();
-        tg.setFillColor(fillColor);
-        tg.setBorderColor(borderColor);
-        tg.setEndPoint(endPoint);
-        composition.add(tg);
-    }
 	
 	/**
      * add a circle
      */
-    public void addCircleGlyph(RGB borderColor, RGB fillColor)
+    public void addCircleGlyph(RGB borderColor, RGB fillColor, Integer size)
     {
-        CircleGlyph cg = new CircleGlyph();
+        CircleGlyph cg = new CircleGlyph(size);
         cg.setFillColor(fillColor);
         cg.setBorderColor(borderColor);
         composition.add(cg);
     }
 
-    public void addCircleGlyph(Point endPoint, RGB borderColor, RGB fillColor) {
-        CircleGlyph cg = new CircleGlyph();
-        cg.setFillColor(fillColor);
-        cg.setBorderColor(borderColor);
-        cg.setEndPoint(endPoint);
-        composition.add(cg);
-        
-    }
 
 	/**
 	 * add an image
 	 */
-	public void addImageGlyph(String fileName) 
+	public void addImageGlyph(String fileName, Integer size) 
 	{
-		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
+		ImageGlyph ig = new ImageGlyph(fileName, size, size);
 		composition.add(ig);
 	} 
-	public void addImageGlyph(Point endPoint, String fileName) {
-		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
-		ig.setEndPoint(endPoint);
-		composition.add(ig);
-	}
+
 	public String getDocName(){return docName;}
 	public int getPageWidth(){return pageWidth;}
 	public int getPageHeight(){return pageHeight;}
@@ -259,14 +231,14 @@ class SimpleCompositor implements Compositor
 		TimeMachine.getInstance().undo();
 		// perform a deep copy of the current time machine state
 		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), TimeMachine.getInstance().getCursor().getY());
-		int newYOffSet = new Integer(TimeMachine.getInstance().getYOffSet());
+		int newYOffSet = Integer.valueOf(TimeMachine.getInstance().getYOffSet());
 		List<Glyph> newGlyphs = new ArrayList<Glyph>();
 		for (Glyph g : TimeMachine.getInstance().getGlyphs()) {
 			newGlyphs.add(g);
 		}
 		List<Integer> newPreviousYOffSets = new ArrayList<Integer>();
 		for (Integer i : TimeMachine.getInstance().getPreviousYOffSets()) {
-			newPreviousYOffSets.add(new Integer(i));
+			newPreviousYOffSets.add(Integer.valueOf(i));
 		}
 		List<Point> newPreviousPositions = new ArrayList<Point>();
 		for (Point p : TimeMachine.getInstance().getPreviousPositions()) {
@@ -287,14 +259,14 @@ class SimpleCompositor implements Compositor
 		TimeMachine.getInstance().redo();
 		// perform a deep copy of the current time machine state
 		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), TimeMachine.getInstance().getCursor().getY());
-		int newYOffSet = new Integer(TimeMachine.getInstance().getYOffSet());
+		int newYOffSet = Integer.valueOf(TimeMachine.getInstance().getYOffSet());
 		List<Glyph> newGlyphs = new ArrayList<Glyph>();
 		for (Glyph g : TimeMachine.getInstance().getGlyphs()) {
 			newGlyphs.add(g);
 		}
 		List<Integer> newPreviousYOffSets = new ArrayList<Integer>();
 		for (Integer i : TimeMachine.getInstance().getPreviousYOffSets()) {
-			newPreviousYOffSets.add(new Integer(i));
+			newPreviousYOffSets.add(Integer.valueOf(i));
 		}
 		List<Point> newPreviousPositions = new ArrayList<Point>();
 		for (Point p : TimeMachine.getInstance().getPreviousPositions()) {
@@ -402,12 +374,7 @@ class SimpleCompositor implements Compositor
 			{
 				RectGlyph rg = (RectGlyph)g;
 				rg.setPos(new Point(cursor.getX(), cursor.getY()));
-				// if rectangle has an endPoint, change it's width and height accordingly
-				if (rg.getEndPoint() != null)
-				{
-					rg.setWidth(rg.getEndPoint().getX() - rg.getPos().getX());
-					rg.setHeight(rg.getEndPoint().getY() - rg.getPos().getY());
-				}
+		
 				if (yOffSet < rg.getHeight() + 10)
 				{
 					yOffSet = rg.getHeight() + 10;
@@ -428,12 +395,7 @@ class SimpleCompositor implements Compositor
             {
 			    TriangleGlyph tg = (TriangleGlyph)g;
 			    tg.setPos(new Point(cursor.getX(), cursor.getY()));
-                // if rectangle has an endPoint, change it's width and height accordingly
-                if (tg.getEndPoint() != null)
-                {
-                    tg.setWidth(tg.getEndPoint().getX() - tg.getPos().getX());
-                    tg.setHeight(tg.getEndPoint().getY() - tg.getPos().getY());
-                }
+               
                 if (yOffSet < tg.getHeight() + 10)
                 {
                     yOffSet = tg.getHeight() + 10;
@@ -454,11 +416,7 @@ class SimpleCompositor implements Compositor
             {
 			    CircleGlyph cg = (CircleGlyph)g;
 			    cg.setPos(new Point(cursor.getX(), cursor.getY()));
-                // if rectangle has an endPoint, change it's width and height accordingly
-                if (cg.getEndPoint() != null)
-                {
-                    cg.setRadius(cg.getEndPoint().getX() - cg.getPos().getX());
-                }
+                
                 if (yOffSet < cg.getRadius() + 10)
                 {
                     yOffSet = cg.getRadius() + 10;
@@ -479,11 +437,7 @@ class SimpleCompositor implements Compositor
 			{
 				ImageGlyph ig = (ImageGlyph)g;
 				ig.setPos(new Point(cursor.getX(), cursor.getY()));
-				if (ig.getEndPoint() != null)
-				{
-					ig.setWidth(ig.getEndPoint().getX() - ig.getPos().getX());
-					ig.setHeight(ig.getEndPoint().getY() - ig.getPos().getY());
-				}
+				
 				if (yOffSet < ig.getHeight() + 10)
 				{
 					yOffSet = ig.getHeight() + 10;
@@ -661,7 +615,6 @@ class ImageGlyph extends Glyph
 	private int height;
 	private Image image;
 	private Point pos;
-	private Point endPoint;
 	
 	/**
 	 * Ctor
@@ -687,8 +640,6 @@ class ImageGlyph extends Glyph
 	public Point getPos(){return pos;}
 	public void setWidth(int width){this.width = width;}
 	public void setHeight(int height){this.height = height;}
-	public Point getEndPoint(){return endPoint;}
-	public void setEndPoint(Point endPoint){this.endPoint = endPoint;}
 
 }
 
@@ -702,18 +653,18 @@ class RectGlyph extends Glyph
 	private Point pos;
 	private int width;
 	private int height;
-	private Point endPoint;
 	private RGB fillColor;
 	private RGB borderColor;
-
-	public RectGlyph() 
-	{
-		super();
-		width = 60;
-		height = 60;
-		fillColor = new RGB(255, 255, 255);
-		borderColor = new RGB(0, 0, 0);
-	}
+	
+	public RectGlyph(Integer size) 
+    {
+        super();
+        width = size;
+        height = size;
+        fillColor = new RGB(255, 255, 255);
+        borderColor = new RGB(0, 0, 0);
+        System.out.println(1);
+    }
 
 	public void setPos(Point pos){this.pos = pos;}
 	public Point getPos(){return pos;}
@@ -723,8 +674,6 @@ class RectGlyph extends Glyph
 	public void setHeight(int height){this.height = height;}
 	public int getWidth(){return width;}
 	public int getHeight(){return height;}
-	public void setEndPoint(Point p) {this.endPoint = p;}
-	public Point getEndPoint() {return this.endPoint;}
 	public RGB getBorderColor(){return borderColor;}
 	public RGB getFillColor(){return fillColor;}
 	public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
@@ -739,14 +688,13 @@ class CircleGlyph extends Glyph
 {
     private Point pos;
     private int radius;
-    private Point endPoint;
     private RGB fillColor;
     private RGB borderColor;
 
-    public CircleGlyph() 
+    public CircleGlyph(Integer size) 
     {
         super();
-        radius = 60;
+        radius = size;
         fillColor = new RGB(255, 255, 255);
         borderColor = new RGB(0, 0, 0);
     }
@@ -757,8 +705,6 @@ class CircleGlyph extends Glyph
 
     public void setRadius(int radius){this.radius = radius;}
     public int getRadius(){return radius;}
-    public void setEndPoint(Point p) {this.endPoint = p;}
-    public Point getEndPoint() {return this.endPoint;}
     public RGB getBorderColor(){return borderColor;}
     public RGB getFillColor(){return fillColor;}
     public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
@@ -774,15 +720,14 @@ class TriangleGlyph extends Glyph
     private Point pos;
     private int width;
     private int height;
-    private Point endPoint;
     private RGB fillColor;
     private RGB borderColor;
 
-    public TriangleGlyph() 
+    public TriangleGlyph(Integer size) 
     {
         super();
-        width = 60;
-        height = 60;
+        width = size;
+        height = size;
         fillColor = new RGB(255, 255, 255);
         borderColor = new RGB(0, 0, 0);
     }
@@ -794,8 +739,6 @@ class TriangleGlyph extends Glyph
     public void setHeight(int height){this.height = height;}
     public int getWidth(){return width;}
     public int getHeight(){return height;}
-    public void setEndPoint(Point p) {this.endPoint = p;}
-    public Point getEndPoint() {return this.endPoint;}
     public RGB getBorderColor(){return borderColor;}
     public RGB getFillColor(){return fillColor;}
     public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
@@ -936,7 +879,7 @@ class TimeMachine {
 			List<Integer> previousYOffSets_copy = new ArrayList<Integer>();
 			for (Integer i : previousYOffSets)
 			{
-				previousYOffSets_copy.add(new Integer(i));
+				previousYOffSets_copy.add(Integer.valueOf(i));
 			}
 			List<Glyph> glyphs_copy = new ArrayList<Glyph>();
 			for (Glyph g : glyphs)
@@ -946,7 +889,7 @@ class TimeMachine {
 			// add the new state
 			cursors.add(new Point(cursor.getX(), cursor.getY()));
 			previousPositions_lists.add(previousPositions_copy);
-			yOffSets.add(new Integer(yOffSet));
+			yOffSets.add(Integer.valueOf(yOffSet));
 			previousYOffSets_lists.add(previousYOffSets_copy);
 			glyphs_lists.add(glyphs_copy);	
 			index = cursors.size() - 1;
@@ -962,7 +905,7 @@ class TimeMachine {
 			List<Integer> previousYOffSets_copy = new ArrayList<Integer>();
 			for (Integer i : previousYOffSets)
 			{
-				previousYOffSets_copy.add(new Integer(i));
+				previousYOffSets_copy.add(Integer.valueOf(i));
 			}
 			List<Glyph> glyphs_copy = new ArrayList<Glyph>();
 			for (Glyph g : glyphs)
@@ -972,7 +915,7 @@ class TimeMachine {
 			// add the new state
 			cursors.add(new Point(cursor.getX(), cursor.getY()));
 			previousPositions_lists.add(previousPositions_copy);
-			yOffSets.add(new Integer(yOffSet));
+			yOffSets.add(Integer.valueOf(yOffSet));
 			previousYOffSets_lists.add(previousYOffSets_copy);
 			glyphs_lists.add(glyphs_copy);	
 			index++;
