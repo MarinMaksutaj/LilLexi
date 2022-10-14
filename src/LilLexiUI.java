@@ -110,10 +110,7 @@ public class LilLexiUI
             e.gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE)); 
     		Font font = new Font(display, fontName, fontSize, SWT.BOLD);
     		e.gc.setFont(font);
-			// iterate over the glyphs and draw them
-			// TimeMachine.getInstance()
-			TimeMachine tm = TimeMachine.getInstance();
-			//tm.printGlyphs();
+
 			List<Glyph> glyphs = currentDoc.getComposition().getGlyphs();
 			for (Glyph g : glyphs) {
 				if (g instanceof CharGlyph) {
@@ -123,7 +120,7 @@ public class LilLexiUI
 					Font f = new Font(display, cg.getFont(), cg.getSize(), SWT.BOLD);
 					e.gc.setFont(f);
 					// if the char is gramatically incorrect, draw a red line under it
-					if (!cg.getGramaticallyCorrect() && spellCheck) { // TODO: maybe a prettier way to do this
+					if (!cg.getGramaticallyCorrect() && spellCheck) { 
 						e.gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 						e.gc.drawLine(cg.getPos().getX(), cg.getPos().getY() + cg.getSize() - vSelection + 5, 
 								cg.getPos().getX() + cg.getSize(), cg.getPos().getY() + cg.getSize() - vSelection + 5);
@@ -156,8 +153,7 @@ public class LilLexiUI
                     e.gc.setBackground(new Color(display, tg.getFillColor()));
                     // set the rectangle border color
                     e.gc.setForeground(new Color(display, tg.getBorderColor()));
-                    // make border width 2
-                    e.gc.setLineWidth(2); // without this the border would be default width 1 but not visible when filled for some reason. TODO: decide what to do
+                    e.gc.setLineWidth(2); 
                     int x1= tg.getPos().getX() + (tg.getWidth()/2);
                     int y1= tg.getPos().getY() + 10;
                     
@@ -186,8 +182,7 @@ public class LilLexiUI
                     e.gc.setBackground(new Color(display, cg.getFillColor()));
                     // set the rectangle border color
                     e.gc.setForeground(new Color(display, cg.getBorderColor()));
-                    // make border width 2
-                    e.gc.setLineWidth(2); // without this the border would be default width 1 but not visible when filled for some reason. TODO: decide what to do
+                    e.gc.setLineWidth(2);
                     e.gc.drawOval(cg.getPos().getX(), cg.getPos().getY() + 10 - vSelection , cg.getRadius(), cg.getRadius());
                     e.gc.fillOval(cg.getPos().getX(), cg.getPos().getY() + 10 - vSelection , cg.getRadius(), cg.getRadius());
                     // reset fill color to transparent
@@ -305,7 +300,7 @@ public class LilLexiUI
 		
 		//---- main menu
 		Menu menuBar, fileMenu, insertMenu, helpMenu;
-		MenuItem fileMenuHeader, insertMenuHeader, helpMenuHeader, fileExitItem, fileSaveItem, helpGetHelpItem;
+		MenuItem fileMenuHeader, insertMenuHeader, helpMenuHeader, fileExitItem, helpGetHelpItem;
 		MenuItem insertImageItem, insertRectItem, insertCircleItem, insertTriangleItem;
 
 		menuBar = new Menu(shell, SWT.BAR);
@@ -315,8 +310,6 @@ public class LilLexiUI
 		fileMenu = new Menu(shell, SWT.DROP_DOWN);
 		fileMenuHeader.setMenu(fileMenu);
 
-	    fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
-	    fileSaveItem.setText("Save");
 	    fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
 	    fileExitItem.setText("Exit");
 
@@ -502,7 +495,7 @@ public class LilLexiUI
 					rectangleEndPosition = null;
 					triangleEndPosition = null;
 					circleEndPosition = null;
-					imageEndPosition = null; // TODO: find a better way to do this
+					imageEndPosition = null;
 					updateUI();
 					return;
 				}
@@ -519,7 +512,7 @@ public class LilLexiUI
                     triangleEndPosition = null;
 					rectangleEndPosition = null;
 					circleEndPosition = null;
-					imageEndPosition = null; // TODO: find a better way to do this
+					imageEndPosition = null; 
                     updateUI();
                     return;
                 }
@@ -535,7 +528,7 @@ public class LilLexiUI
                     circleEndPosition = null;
 					rectangleEndPosition = null;
 					triangleEndPosition = null;
-					imageEndPosition = null; // TODO: find a better way to do this
+					imageEndPosition = null; 
                     updateUI();
                     return;
                 }
@@ -585,46 +578,6 @@ public class LilLexiUI
 	    		shell.close();
 	    		display.dispose();
 	    	}
-	    });
-
-		// when the user clicks save, open a file dialog, and save the canvas as a png
-		// TODO: this part does not work. Image doesn't save. Fix it.
-	    fileSaveItem.addSelectionListener(new SelectionListener() {
-	    	public void widgetSelected(SelectionEvent event) {
-	    		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-	    		dialog.setFilterExtensions(new String[] {"*.png"});
-	    		String result = dialog.open();
-	    		if (result != null) {
-					// save the canvas as a png
-					// do it here
-					Image image = new Image(display, canvasWidth, canvasHeight);
-					GC gc = new GC(image);
-					gc.copyArea(image, 0, 0);
-					ImageLoader loader = new ImageLoader();
-					loader.data = new ImageData[] {image.getImageData()};
-					loader.save(result, SWT.IMAGE_PNG);
-					gc.dispose();
-					image.dispose();
-	    		}
-	    	}
-
-	    	public void widgetDefaultSelected(SelectionEvent event) {
-	    		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-	    		dialog.setFilterExtensions(new String[] {"*.png"});
-	    		String result = dialog.open();
-	    		if (result != null) {
-	    			// save the canvas as a png
-					// do it here
-					Image image = new Image(display, canvasWidth, canvasHeight);
-					GC gc = new GC(image);
-					gc.copyArea(image, 0, 0);
-					ImageLoader loader = new ImageLoader();
-					loader.data = new ImageData[] {image.getImageData()};
-					loader.save(result, SWT.IMAGE_PNG);
-					gc.dispose();
-					image.dispose();
-	    		}
-	    	}    		
 	    });
 
 		// Spell check menu item. Toggle spell check on and off.

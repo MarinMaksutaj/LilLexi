@@ -11,26 +11,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Color;
+
 
 /**
  * LilLexiDoc uses the Glyph class and Composite pattern
  */
 public class LilLexiDoc 
 {
-	// TODO: remove the unnecessary fields here. Some of them are in the Composite pattern so no need to have them here.
 	private LilLexiUI ui;
-	private List<Glyph> glyphs;
 	private String docName;
 	private int pageWidth;
 	private int pageHeight;
@@ -43,7 +32,6 @@ public class LilLexiDoc
 	 */
 	public LilLexiDoc() 
 	{
-		glyphs = new ArrayList<Glyph>();
 		docName = "Untitled";
 		pageWidth = 800;
 		pageHeight = 800;
@@ -67,8 +55,7 @@ public class LilLexiDoc
 		CharGlyph cg = new CharGlyph(c);
 		cg.setColor(color);
 		cg.setFont(fontName);
-		cg.setSize(fontSize);
-		glyphs.add(cg);
+		cg.setSize(fontSize);;
 		composition.add(cg);
 	}
 
@@ -80,7 +67,6 @@ public class LilLexiDoc
 		RectGlyph rg = new RectGlyph();
 		rg.setFillColor(fillColor);
 		rg.setBorderColor(borderColor);
-		glyphs.add(rg);
 		composition.add(rg);
 	}
 
@@ -89,7 +75,6 @@ public class LilLexiDoc
 		rg.setFillColor(fillColor);
 		rg.setBorderColor(borderColor);
 		rg.setEndPoint(endPoint);
-		glyphs.add(rg);
 		composition.add(rg);
 	}
 	
@@ -101,7 +86,6 @@ public class LilLexiDoc
         TriangleGlyph tg = new TriangleGlyph();
         tg.setFillColor(fillColor);
         tg.setBorderColor(borderColor);
-        glyphs.add(tg);
         composition.add(tg);
     }
     
@@ -112,7 +96,6 @@ public class LilLexiDoc
         tg.setFillColor(fillColor);
         tg.setBorderColor(borderColor);
         tg.setEndPoint(endPoint);
-        glyphs.add(tg);
         composition.add(tg);
     }
 	
@@ -124,7 +107,6 @@ public class LilLexiDoc
         CircleGlyph cg = new CircleGlyph();
         cg.setFillColor(fillColor);
         cg.setBorderColor(borderColor);
-        glyphs.add(cg);
         composition.add(cg);
     }
 
@@ -133,7 +115,6 @@ public class LilLexiDoc
         cg.setFillColor(fillColor);
         cg.setBorderColor(borderColor);
         cg.setEndPoint(endPoint);
-        glyphs.add(cg);
         composition.add(cg);
         
     }
@@ -144,16 +125,13 @@ public class LilLexiDoc
 	public void addImageGlyph(String fileName) 
 	{
 		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
-		glyphs.add(ig);
 		composition.add(ig);
 	} 
 	public void addImageGlyph(Point endPoint, String fileName) {
 		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
 		ig.setEndPoint(endPoint);
-		glyphs.add(ig);
 		composition.add(ig);
 	}
-	public List<Glyph> getGlyphs(){return glyphs;}
 	public String getDocName(){return docName;}
 	public int getPageWidth(){return pageWidth;}
 	public int getPageHeight(){return pageHeight;}
@@ -183,7 +161,7 @@ public class LilLexiDoc
 	public String toString()
 	{
 		String s = "LilLexiDoc: " + docName + " " + pageWidth + " " + pageHeight + " " + numColumns + " " + cursorPosition;
-		for (Glyph g: glyphs)
+		for (Glyph g: composition.getGlyphs())
 		{
 			s += g.toString();
 		}
@@ -530,20 +508,14 @@ class SimpleCompositor implements Compositor
 	public void spellCheck(Composition c)
 	{
 		
-		//TODO: implement spell check
 		List <Glyph> glyphs = c.getGlyphs();
-		// check each glyph
-		// group char glyphs into words, and check each word for spelling correctness
-		// if word is misspelled, set every char glyph in the word to gramaticallyCorrect = false
 		String word = "";
 		for (int i = 0 ; i < glyphs.size() ; i++) {
 			Glyph g = glyphs.get(i);
 			if (g instanceof CharGlyph) {
-				// check if char glyph is a whitespace. If it is, then it is the end of a word. If it is not, then continue adding to the word
 				CharGlyph cg = (CharGlyph)g;
 				if (cg.getChar() == ' ' || cg.getChar() == '\0') {
 					// check if word is misspelled
-					System.out.println(word);
 					if (word.length() > 0 && !SpellChecker.getInstance().isCorrect(word)) {
 						// set every char glyph in the word to gramaticallyCorrect = false
 						for (int j = i - word.length() ; j < i ; j++) {
