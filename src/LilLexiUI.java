@@ -111,6 +111,9 @@ public class LilLexiUI
     		Font font = new Font(display, fontName, fontSize, SWT.BOLD);
     		e.gc.setFont(font);
 			// iterate over the glyphs and draw them
+			// TimeMachine.getInstance()
+			TimeMachine tm = TimeMachine.getInstance();
+			//tm.printGlyphs();
 			List<Glyph> glyphs = currentDoc.getComposition().getGlyphs();
 			for (Glyph g : glyphs) {
 				if (g instanceof CharGlyph) {
@@ -650,6 +653,25 @@ public class LilLexiUI
             	System.out.println("About");
             }
         });
+
+		// TODO: experimental undo/redo
+		MenuItem undoItem = new MenuItem(fileMenu, SWT.PUSH);
+		undoItem.setText("Undo");
+		undoItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				lexiControl.undo();
+				updateUI();
+			}
+		});
+
+		MenuItem redoItem = new MenuItem(fileMenu, SWT.PUSH);
+		redoItem.setText("Redo");
+		redoItem.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				lexiControl.redo();
+				updateUI();
+			}
+		});
 	    
 	    shell.setMenuBar(menuBar);
 	      

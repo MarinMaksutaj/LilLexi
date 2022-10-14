@@ -199,6 +199,14 @@ public class LilLexiDoc
 		compositor.compose(composition);
 		
 	}
+
+	public void undo() {
+		compositor.undo(composition);
+	}
+
+	public void redo() {
+		compositor.redo(composition);
+	}
 }
 
 
@@ -239,6 +247,8 @@ interface Compositor
 	public void compose(Composition c);
 	public void backspace(Composition c);
 	public void lineBreak(Composition c);
+	public void undo(Composition c);
+	public void redo (Composition c);
 }
 
 /**
@@ -262,8 +272,67 @@ class SimpleCompositor implements Compositor
 		this.yOffSet = 30;
 		this.previousYOffSets = new ArrayList<Integer>();
 	}
+
+	public void undo (Composition c) {
+		if (!TimeMachine.getInstance().canUndo()) {
+			return;
+		}
+		System.out.println("undoin");
+		TimeMachine.getInstance().undo();
+		// perform a deep copy of the current time machine state
+		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), TimeMachine.getInstance().getCursor().getY());
+		int newYOffSet = new Integer(TimeMachine.getInstance().getYOffSet());
+		List<Glyph> newGlyphs = new ArrayList<Glyph>();
+		for (Glyph g : TimeMachine.getInstance().getGlyphs()) {
+			newGlyphs.add(g);
+		}
+		List<Integer> newPreviousYOffSets = new ArrayList<Integer>();
+		for (Integer i : TimeMachine.getInstance().getPreviousYOffSets()) {
+			newPreviousYOffSets.add(new Integer(i));
+		}
+		List<Point> newPreviousPositions = new ArrayList<Point>();
+		for (Point p : TimeMachine.getInstance().getPreviousPositions()) {
+			newPreviousPositions.add(new Point(p.getX(), p.getY()));
+		}
+		// set the composition to the new state
+		this.cursor = newCursor;
+		this.yOffSet = newYOffSet;
+		c.setGlyphs(newGlyphs);
+		this.previousYOffSets = newPreviousYOffSets;
+		this.previousPositions = newPreviousPositions;
+	}
+
+	public void redo (Composition c) {
+		if (!TimeMachine.getInstance().canRedo()) {
+			return;
+		}
+		TimeMachine.getInstance().redo();
+		// perform a deep copy of the current time machine state
+		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), TimeMachine.getInstance().getCursor().getY());
+		int newYOffSet = new Integer(TimeMachine.getInstance().getYOffSet());
+		List<Glyph> newGlyphs = new ArrayList<Glyph>();
+		for (Glyph g : TimeMachine.getInstance().getGlyphs()) {
+			newGlyphs.add(g);
+		}
+		List<Integer> newPreviousYOffSets = new ArrayList<Integer>();
+		for (Integer i : TimeMachine.getInstance().getPreviousYOffSets()) {
+			newPreviousYOffSets.add(new Integer(i));
+		}
+		List<Point> newPreviousPositions = new ArrayList<Point>();
+		for (Point p : TimeMachine.getInstance().getPreviousPositions()) {
+			newPreviousPositions.add(new Point(p.getX(), p.getY()));
+		}
+		// set the composition to the new state
+		this.cursor = newCursor;
+		this.yOffSet = newYOffSet;
+		c.setGlyphs(newGlyphs);
+		this.previousYOffSets = newPreviousYOffSets;
+		this.previousPositions = newPreviousPositions;
+	}
+
 	public void addUI (LilLexiUI ui) {this.ui = ui;}
 	public void backspace (Composition c) {
+		
 		spellCheck(c); // should we put it somewhere else?
 		System.out.println("Size of glyphs " + c.getGlyphs().size());
 		System.out.println("size of previous positions: " + previousPositions.size());
@@ -285,8 +354,10 @@ class SimpleCompositor implements Compositor
 		yOffSet = lastYOffSet;
 		// remove last y offset
 		previousYOffSets.remove(previousYOffSets.size()-1);
+	
 	}
 	public void lineBreak (Composition c) {
+		
 		spellCheck(c);
 		// add a new previous position
 		previousPositions.add(new Point(cursor.getX(), cursor.getY()));
@@ -300,9 +371,11 @@ class SimpleCompositor implements Compositor
 		c.getGlyphs().add(emptySpace);
 		cursor = new Point(0, cursor.getY() + yOffSet);
 		this.yOffSet = 30;
+		
 	}
 	public void compose(Composition c)
 	{
+		
 	    spellCheck(c);
 		List<Glyph> glyphs = c.getGlyphs();
 		//System.out.println(glyphs.size());
@@ -318,6 +391,7 @@ class SimpleCompositor implements Compositor
 			}
 			previousPositions.add(new Point(cursor.getX(), cursor.getY()));
 			previousYOffSets.add(yOffSet);
+			
 			// check what type of glyph it is and draw it
 			// if it is a character glyph, draw it, move the cursor by a fixed amount and continue
 			// if it is a rectangle glyph, draw it and continue, move the cursor by a the width of the rectangle
@@ -448,6 +522,9 @@ class SimpleCompositor implements Compositor
 				}
 			}
 		}
+		// add previous state in TimeMachine
+		TimeMachine.getInstance().addState(cursor, previousPositions, yOffSet, previousYOffSets, c.getGlyphs());
+		
 	}
 
 	public void spellCheck(Composition c)
@@ -555,6 +632,10 @@ class Composition
 
 	public void  removeLast() {
 		glyphs.remove(glyphs.size() - 1);
+	}
+
+	public void setGlyphs(List<Glyph> glyphs) {
+		this.glyphs = glyphs;
 	}
 
 }
@@ -811,5 +892,185 @@ class SpellChecker
 			}
 		}
 		return dict.contains(word.toLowerCase());	
+	}
+}
+
+
+/**
+ * This class is used to implement the redo and undo functionality
+ */
+class TimeMachine {
+
+	private List<Point> cursors;
+	private List<List<Point>> previousPositions_lists;
+	private List<Integer> yOffSets;
+	private List<List<Integer>> previousYOffSets_lists;
+	private List<List<Glyph>> glyphs_lists;
+	int index;
+	private static TimeMachine instance;
+	
+	public static TimeMachine getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new TimeMachine();
+		}
+		return instance;
+	}
+	
+	private TimeMachine()
+	{
+		cursors = new ArrayList<Point>();
+		previousPositions_lists = new ArrayList<List<Point>>();
+		yOffSets = new ArrayList<Integer>();
+		previousYOffSets_lists = new ArrayList<List<Integer>>();
+		glyphs_lists = new ArrayList<List<Glyph>>();
+		index = 0;
+		// the initial state is the empty document
+		cursors.add(new Point(0, 0));
+		previousPositions_lists.add(new ArrayList<Point>());
+		yOffSets.add(0);
+		previousYOffSets_lists.add(new ArrayList<Integer>());
+		glyphs_lists.add(new ArrayList<Glyph>());
+	}
+
+	public void addState(Point cursor, List<Point> previousPositions, int yOffSet, List<Integer> previousYOffSets, List<Glyph> glyphs)
+	{
+		// check if size is greater than 10, if it is replace oldest state with new one
+		if (cursors.size() > 10)
+		{
+			cursors.remove(0);
+			previousPositions_lists.remove(0);
+			yOffSets.remove(0);
+			previousYOffSets_lists.remove(0);
+			glyphs_lists.remove(0);
+			index--;
+		}
+	    
+		if (index < cursors.size() - 1) 
+		{
+			// remove all the states after the current index
+			cursors = cursors.subList(0, index + 1);
+			previousPositions_lists = previousPositions_lists.subList(0, index + 1);
+			yOffSets = yOffSets.subList(0, index + 1);
+			previousYOffSets_lists = previousYOffSets_lists.subList(0, index + 1);
+			glyphs_lists = glyphs_lists.subList(0, index + 1);
+			// perform a deep copy of the lists
+			List<Point> previousPositions_copy = new ArrayList<Point>();
+			for (Point p : previousPositions)
+			{
+				previousPositions_copy.add(new Point(p.getX(), p.getY()));
+			}
+			List<Integer> previousYOffSets_copy = new ArrayList<Integer>();
+			for (Integer i : previousYOffSets)
+			{
+				previousYOffSets_copy.add(new Integer(i));
+			}
+			List<Glyph> glyphs_copy = new ArrayList<Glyph>();
+			for (Glyph g : glyphs)
+			{
+				glyphs_copy.add(g);
+			}
+			// add the new state
+			cursors.add(new Point(cursor.getX(), cursor.getY()));
+			previousPositions_lists.add(previousPositions_copy);
+			yOffSets.add(new Integer(yOffSet));
+			previousYOffSets_lists.add(previousYOffSets_copy);
+			glyphs_lists.add(glyphs_copy);	
+			index = cursors.size() - 1;
+		}
+		else
+		{
+			// perform a deep copy of the lists
+			List<Point> previousPositions_copy = new ArrayList<Point>();
+			for (Point p : previousPositions)
+			{
+				previousPositions_copy.add(new Point(p.getX(), p.getY()));
+			}
+			List<Integer> previousYOffSets_copy = new ArrayList<Integer>();
+			for (Integer i : previousYOffSets)
+			{
+				previousYOffSets_copy.add(new Integer(i));
+			}
+			List<Glyph> glyphs_copy = new ArrayList<Glyph>();
+			for (Glyph g : glyphs)
+			{
+				glyphs_copy.add(g);
+			}
+			// add the new state
+			cursors.add(new Point(cursor.getX(), cursor.getY()));
+			previousPositions_lists.add(previousPositions_copy);
+			yOffSets.add(new Integer(yOffSet));
+			previousYOffSets_lists.add(previousYOffSets_copy);
+			glyphs_lists.add(glyphs_copy);	
+			index++;
+		}
+	}
+
+	public void undo()
+	{
+		if (index > 0)
+		{
+			index--;
+		}
+		
+		// print the current glyph list
+	}
+
+	public void printGlyphs() {
+	    System.out.println("size undo: " + cursors.size());
+        System.out.println("undo index: " + index);
+		System.out.println("==================================");
+		for (int i = 0; i < glyphs_lists.size() ; i++) {
+			for (Glyph g : glyphs_lists.get(i)) {
+			    CharGlyph cg = (CharGlyph)g;
+				System.out.print(cg.getChar());
+			}
+			System.out.println();
+		}
+		System.out.println("==================================");
+	}
+
+	public void redo()
+	{
+		if (index < cursors.size() - 1)
+		{
+			index++;
+		}
+	}
+
+	public Point getCursor()
+	{
+		return cursors.get(index);
+	}
+
+	public List<Point> getPreviousPositions()
+	{
+		return previousPositions_lists.get(index);
+	}
+
+	public int getYOffSet()
+	{
+		return yOffSets.get(index);
+	}
+
+	public List<Integer> getPreviousYOffSets()
+	{
+		return previousYOffSets_lists.get(index);
+	}
+
+	public List<Glyph> getGlyphs()
+	{
+		return glyphs_lists.get(index);
+	}
+
+	public boolean canUndo()
+	{
+		return index > 0;
+	}
+
+	public boolean canRedo()
+	{
+		return index < cursors.size() - 1;
 	}
 }
