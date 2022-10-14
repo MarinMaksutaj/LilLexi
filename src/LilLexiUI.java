@@ -111,6 +111,9 @@ public class LilLexiUI
     		Font font = new Font(display, fontName, fontSize, SWT.BOLD);
     		e.gc.setFont(font);
 			// iterate over the glyphs and draw them
+			// TimeMachine.getInstance()
+			TimeMachine tm = TimeMachine.getInstance();
+			//tm.printGlyphs();
 			List<Glyph> glyphs = currentDoc.getComposition().getGlyphs();
 			for (Glyph g : glyphs) {
 				if (g instanceof CharGlyph) {
