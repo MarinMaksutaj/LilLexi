@@ -299,24 +299,21 @@ public class LilLexiUI
 		statusLabel.setText("Ready to edit!");
 		
 		//---- main menu
-		Menu menuBar, fileMenu, insertMenu, helpMenu;
-		MenuItem fileMenuHeader, insertMenuHeader, helpMenuHeader, fileExitItem, helpGetHelpItem;
+		Menu menuBar, toolsMenu, insertMenu, helpMenu;
+		MenuItem toolsMenuHeader, insertMenuHeader, helpMenuHeader, toolsExitItem, helpGetHelpItem;
 		MenuItem insertImageItem, insertRectItem, insertCircleItem, insertTriangleItem;
 
 		menuBar = new Menu(shell, SWT.BAR);
 		
-		fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-		fileMenuHeader.setText("File");
-		fileMenu = new Menu(shell, SWT.DROP_DOWN);
-		fileMenuHeader.setMenu(fileMenu);
-
-	    fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
-	    fileExitItem.setText("Exit");
+		toolsMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+		toolsMenuHeader.setText("Tools");
+		toolsMenu = new Menu(shell, SWT.DROP_DOWN);
+		toolsMenuHeader.setMenu(toolsMenu);
 
 		// add a color picker for the font color
-		MenuItem fileFontColorItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileFontColorItem.setText("Font Color");
-		fileFontColorItem.addListener(SWT.Selection, new Listener() {
+		MenuItem toolsFontColorItem = new MenuItem(toolsMenu, SWT.PUSH);
+		toolsFontColorItem.setText("Font Color");
+		toolsFontColorItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				ColorDialog cd = new ColorDialog(shell);
 				cd.setText("Choose a font color");
@@ -330,9 +327,9 @@ public class LilLexiUI
 		});
 
 		// add a font picker
-		MenuItem fileFontItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileFontItem.setText("Font Family");
-		fileFontItem.addListener(SWT.Selection, new Listener() {
+		MenuItem toolsFontItem = new MenuItem(toolsMenu, SWT.PUSH);
+		toolsFontItem.setText("Font Family");
+		toolsFontItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				FontDialog fd = new FontDialog(shell);
 				fd.setText("Choose a font");
@@ -348,9 +345,9 @@ public class LilLexiUI
 		});
 
 		// add a font size picker
-		MenuItem fileFontSizeItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileFontSizeItem.setText("Font Size");
-		fileFontSizeItem.addListener(SWT.Selection, new Listener() {
+		MenuItem toolsFontSizeItem = new MenuItem(toolsMenu, SWT.PUSH);
+		toolsFontSizeItem.setText("Font Size");
+		toolsFontSizeItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				FontDialog fd = new FontDialog(shell);
 				fd.setText("Choose a font size");
@@ -364,113 +361,55 @@ public class LilLexiUI
 				}
 			}
 		});
-
-		// add a color picker for the rectangle fill color
-		MenuItem fileRectFillColorItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileRectFillColorItem.setText("Rectangle Fill Color");
-		fileRectFillColorItem.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				ColorDialog cd = new ColorDialog(shell);
-				cd.setText("Choose a rectangle fill color");
-				cd.setRGB(rectangleFillColor);
-				RGB newColor = cd.open();
-				if (newColor != null) {
-					rectangleFillColor = newColor;
-				}
-			}
-		});
-
-		// add a color picker for the rectangle border color
-		MenuItem fileRectBorderColorItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileRectBorderColorItem.setText("Rectangle Border Color");
-		fileRectBorderColorItem.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				ColorDialog cd = new ColorDialog(shell);
-				cd.setText("Choose a rectangle border color");
-				cd.setRGB(rectangleBorderColor);
-				RGB newColor = cd.open();
-				if (newColor != null) {
-					rectangleBorderColor = newColor;
-				}
-			}
-		});
 		
-		// add a color picker for the triangle fill color
-        MenuItem fileTriangleFillColorItem = new MenuItem(fileMenu, SWT.PUSH);
-        fileTriangleFillColorItem.setText("Triangle Fill Color");
-        fileTriangleFillColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a triangle fill color");
-                cd.setRGB(triangleFillColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    triangleFillColor = newColor;
-                }
-            }
-        });
-
-        // add a color picker for the triangle border color
-        MenuItem fileTriangleBorderColorItem = new MenuItem(fileMenu, SWT.PUSH);
-        fileTriangleBorderColorItem.setText("Triangle Border Color");
-        fileTriangleBorderColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a triangle border color");
-                cd.setRGB(rectangleBorderColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    triangleBorderColor = newColor;
-                }
-            }
-        });
-        
-		
-		// add a color picker for the circle fill color
-        MenuItem fileCircleFillColorItem = new MenuItem(fileMenu, SWT.PUSH);
-        fileCircleFillColorItem.setText("Circle Fill Color");
-        fileCircleFillColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a circle fill color");
-                cd.setRGB(circleFillColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    circleFillColor = newColor;
-                }
-            }
-        });
-        
-     // add a color picker for the circle border color
-        MenuItem fileCircleBorderColorItem = new MenuItem(fileMenu, SWT.PUSH);
-        fileCircleBorderColorItem.setText("Circle Border Color");
-        fileCircleBorderColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a circle border color");
-                cd.setRGB(circleBorderColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    circleBorderColor = newColor;
-                }
-            }
-        });
-
-        
-
 		// add a dark mode toggle
-		MenuItem fileDarkModeItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileDarkModeItem.setText("Dark Mode");
-		fileDarkModeItem.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				if (darkMode) {
-					darkMode = false;
-				} else {
-					darkMode = true;
-				}
-				updateUI();
-			}
-		});
+        MenuItem toolsDarkModeItem = new MenuItem(toolsMenu, SWT.PUSH);
+        toolsDarkModeItem.setText("Dark Mode");
+        toolsDarkModeItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                if (darkMode) {
+                    darkMode = false;
+                } else {
+                    darkMode = true;
+                }
+                updateUI();
+            }
+        });
+        
+        MenuItem toolsUndoItem = new MenuItem(toolsMenu, SWT.PUSH);
+        toolsUndoItem.setText("Undo");
+        toolsUndoItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                lexiControl.undo();
+                updateUI();
+            }
+        });
+
+        MenuItem toolsRedoItem = new MenuItem(toolsMenu, SWT.PUSH);
+        toolsRedoItem.setText("Redo");
+        toolsRedoItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                lexiControl.redo();
+                updateUI();
+            }
+        });
+        
+        MenuItem spellCheckItem = new MenuItem(toolsMenu, SWT.PUSH);
+        spellCheckItem.setText("Spell Checker");
+     // Spell check menu item. Toggle spell check on and off.
+        spellCheckItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                if (spellCheck) {
+                    spellCheck = false;
+                } else {
+                    spellCheck = true;
+                }
+                updateUI();
+            }
+        });
+		
+		toolsExitItem = new MenuItem(toolsMenu, SWT.PUSH);
+        toolsExitItem.setText("Exit");
 
 		insertMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 		insertMenuHeader.setText("Insert");
@@ -485,8 +424,98 @@ public class LilLexiUI
 	    insertCircleItem.setText("Circle");
 	    insertTriangleItem = new MenuItem(insertMenu, SWT.PUSH);
 	    insertTriangleItem.setText("Triangle");
-		MenuItem spellCheckItem = new MenuItem(insertMenu, SWT.PUSH);
-		spellCheckItem.setText("Spell Checker");
+		
+		
+		// add a color picker for the rectangle fill color
+        MenuItem insertRectFillColorItem = new MenuItem(insertMenu, SWT.PUSH);
+        insertRectFillColorItem.setText("Rectangle Fill Color");
+        insertRectFillColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a rectangle fill color");
+                cd.setRGB(rectangleFillColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    rectangleFillColor = newColor;
+                }
+            }
+        });
+
+        // add a color picker for the rectangle border color
+        MenuItem insertRectBorderColorItem = new MenuItem(insertMenu, SWT.PUSH);
+        insertRectBorderColorItem.setText("Rectangle Border Color");
+        insertRectBorderColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a rectangle border color");
+                cd.setRGB(rectangleBorderColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    rectangleBorderColor = newColor;
+                }
+            }
+        });
+        
+        // add a color picker for the triangle fill color
+        MenuItem insertTriangleFillColorItem = new MenuItem(insertMenu, SWT.PUSH);
+        insertTriangleFillColorItem.setText("Triangle Fill Color");
+        insertTriangleFillColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a triangle fill color");
+                cd.setRGB(triangleFillColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    triangleFillColor = newColor;
+                }
+            }
+        });
+
+        // add a color picker for the triangle border color
+        MenuItem insertTriangleBorderColorItem = new MenuItem(insertMenu, SWT.PUSH);
+        insertTriangleBorderColorItem.setText("Triangle Border Color");
+        insertTriangleBorderColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a triangle border color");
+                cd.setRGB(rectangleBorderColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    triangleBorderColor = newColor;
+                }
+            }
+        });
+        
+        
+        // add a color picker for the circle fill color
+        MenuItem insertCircleFillColorItem = new MenuItem(insertMenu, SWT.PUSH);
+        insertCircleFillColorItem.setText("Circle Fill Color");
+        insertCircleFillColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a circle fill color");
+                cd.setRGB(circleFillColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    circleFillColor = newColor;
+                }
+            }
+        });
+        
+     // add a color picker for the circle border color
+        MenuItem insertCircleBorderColorItem = new MenuItem(insertMenu, SWT.PUSH);
+        insertCircleBorderColorItem.setText("Circle Border Color");
+        insertCircleBorderColorItem.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                ColorDialog cd = new ColorDialog(shell);
+                cd.setText("Choose a circle border color");
+                cd.setRGB(circleBorderColor);
+                RGB newColor = cd.open();
+                if (newColor != null) {
+                    circleBorderColor = newColor;
+                }
+            }
+        });
 
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -569,7 +598,7 @@ public class LilLexiUI
 	    helpGetHelpItem = new MenuItem(helpMenu, SWT.PUSH);
 	    helpGetHelpItem.setText("Get Help");
 	    
-	    fileExitItem.addSelectionListener(new SelectionListener() {
+	    toolsExitItem.addSelectionListener(new SelectionListener() {
 	    	public void widgetSelected(SelectionEvent event) {
 	    		shell.close();
 	    		display.dispose();
@@ -580,17 +609,7 @@ public class LilLexiUI
 	    	}
 	    });
 
-		// Spell check menu item. Toggle spell check on and off.
-		spellCheckItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				if (spellCheck) {
-					spellCheck = false;
-				} else {
-					spellCheck = true;
-				}
-				updateUI();
-			}
-		});
+		
 
 	    helpGetHelpItem.addSelectionListener(new SelectionListener() {
 	    	public void widgetSelected(SelectionEvent event) {
@@ -607,24 +626,7 @@ public class LilLexiUI
             }
         });
 
-		// TODO: experimental undo/redo
-		MenuItem undoItem = new MenuItem(fileMenu, SWT.PUSH);
-		undoItem.setText("Undo");
-		undoItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				lexiControl.undo();
-				updateUI();
-			}
-		});
-
-		MenuItem redoItem = new MenuItem(fileMenu, SWT.PUSH);
-		redoItem.setText("Redo");
-		redoItem.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				lexiControl.redo();
-				updateUI();
-			}
-		});
+		
 	    
 	    shell.setMenuBar(menuBar);
 	      
