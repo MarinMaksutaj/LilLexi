@@ -29,17 +29,7 @@ public class LilLexiUI
 	private Canvas canvas;
 	private int canvasWidth;
 	private int canvasHeight;
-	private Point rectangleEndPosition;
-	private Point circleEndPosition;
-	private Point triangleEndPosition;
-	private Point imageEndPosition;
 	private RGB fontColor;
-	private RGB rectangleFillColor;
-	private RGB rectangleBorderColor;
-	private RGB triangleFillColor;
-    private RGB triangleBorderColor;
-	private RGB circleFillColor;
-    private RGB circleBorderColor;
 	private boolean darkMode;
 	private String fontName;
 	private int fontSize;
@@ -57,23 +47,8 @@ public class LilLexiUI
 	    shell.setText("Lil Lexi");
 		shell.setSize(810,900);
 		shell.setLayout( new GridLayout());
-		rectangleEndPosition = new Point(10,10);
-		circleEndPosition = new Point(10,10);
-		triangleEndPosition = new Point(10,10);
 		// set default fontColor to blue
 		fontColor = new RGB(0,0,255);
-		// set default rectangleFillColor to transparent
-		rectangleFillColor = new RGB(255,255,255);
-		// set default rectangleBorderColor to black
-		rectangleBorderColor = new RGB(0,0,0);
-		// set default circleFillColor to transparent
-		triangleFillColor = new RGB(255,255,255);
-        // set default circleBorderColor to black
-		triangleBorderColor = new RGB(0,0,0);
-		// set default circleFillColor to transparent
-		circleFillColor = new RGB(255,255,255);
-        // set default circleBorderColor to black
-		circleBorderColor = new RGB(0,0,0);
 		darkMode = false;
 		fontName = "Courier";
 		fontSize = 24;
@@ -203,48 +178,6 @@ public class LilLexiUI
 			}
 		});	
 		
-        canvas.addMouseListener(new MouseListener() {
-            public void mouseDown(MouseEvent e) {
-            	System.out.println("mouseDown in canvas");
-				// change rectangleEndPosition to the mouse position
-				if (rectangleEndPosition == null) {
-					rectangleEndPosition = new Point(e.x, e.y);
-				}
-				else {
-					rectangleEndPosition.setX(e.x);
-					rectangleEndPosition.setY(e.y);
-				}
-				
-				// change circleEndPosition to the mouse position
-                if (circleEndPosition == null) {
-                    circleEndPosition = new Point(e.x, e.y);
-                }
-                else {
-                    circleEndPosition.setX(e.x);
-                    circleEndPosition.setY(e.y);
-                }
-                
-             // change triangleEndPosition to the mouse position
-                if (triangleEndPosition == null) {
-                    triangleEndPosition = new Point(e.x, e.y);
-                }
-                else {
-                    triangleEndPosition.setX(e.x);
-                    triangleEndPosition.setY(e.y);
-                }
-			// change imageEndPosition to the mouse position
-				if (imageEndPosition == null) {
-					imageEndPosition = new Point(e.x, e.y);
-				}
-				else {
-					imageEndPosition.setX(e.x);
-					imageEndPosition.setY(e.y);
-				}
-                
-            } 
-            public void mouseUp(MouseEvent e) {} 
-            public void mouseDoubleClick(MouseEvent e) {} 
-        });
         
         canvas.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent e) {
@@ -252,10 +185,6 @@ public class LilLexiUI
 				if (e.keyCode == SWT.SHIFT || e.keyCode == SWT.CTRL || e.keyCode == SWT.ALT || e.keyCode == SWT.CAPS_LOCK || e.keyCode == SWT.NUM_LOCK || e.keyCode == SWT.SCROLL_LOCK || e.keyCode == SWT.INSERT) {
 					return;
 				}
-				// check if key is backspace
-				rectangleEndPosition = null;
-				triangleEndPosition = null;
-				circleEndPosition = null;
 				if (e.keyCode == SWT.BS) {
 					lexiControl.backspace();
 					updateUI();
@@ -425,104 +354,23 @@ public class LilLexiUI
 	    insertCircleItem.setText("Circle");
 	    insertTriangleItem = new MenuItem(insertMenu, SWT.PUSH);
 	    insertTriangleItem.setText("Triangle");
-		
-		
-		// add a color picker for the rectangle fill color
-        MenuItem insertRectFillColorItem = new MenuItem(insertMenu, SWT.PUSH);
-        insertRectFillColorItem.setText("Rectangle Fill Color");
-        insertRectFillColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a rectangle fill color");
-                cd.setRGB(rectangleFillColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    rectangleFillColor = newColor;
-                }
-            }
-        });
-
-        // add a color picker for the rectangle border color
-        MenuItem insertRectBorderColorItem = new MenuItem(insertMenu, SWT.PUSH);
-        insertRectBorderColorItem.setText("Rectangle Border Color");
-        insertRectBorderColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a rectangle border color");
-                cd.setRGB(rectangleBorderColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    rectangleBorderColor = newColor;
-                }
-            }
-        });
-        
-        // add a color picker for the triangle fill color
-        MenuItem insertTriangleFillColorItem = new MenuItem(insertMenu, SWT.PUSH);
-        insertTriangleFillColorItem.setText("Triangle Fill Color");
-        insertTriangleFillColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a triangle fill color");
-                cd.setRGB(triangleFillColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    triangleFillColor = newColor;
-                }
-            }
-        });
-
-        // add a color picker for the triangle border color
-        MenuItem insertTriangleBorderColorItem = new MenuItem(insertMenu, SWT.PUSH);
-        insertTriangleBorderColorItem.setText("Triangle Border Color");
-        insertTriangleBorderColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a triangle border color");
-                cd.setRGB(rectangleBorderColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    triangleBorderColor = newColor;
-                }
-            }
-        });
-        
-        
-        // add a color picker for the circle fill color
-        MenuItem insertCircleFillColorItem = new MenuItem(insertMenu, SWT.PUSH);
-        insertCircleFillColorItem.setText("Circle Fill Color");
-        insertCircleFillColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a circle fill color");
-                cd.setRGB(circleFillColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    circleFillColor = newColor;
-                }
-            }
-        });
-        
-     // add a color picker for the circle border color
-        MenuItem insertCircleBorderColorItem = new MenuItem(insertMenu, SWT.PUSH);
-        insertCircleBorderColorItem.setText("Circle Border Color");
-        insertCircleBorderColorItem.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                ColorDialog cd = new ColorDialog(shell);
-                cd.setText("Choose a circle border color");
-                cd.setRGB(circleBorderColor);
-                RGB newColor = cd.open();
-                if (newColor != null) {
-                    circleBorderColor = newColor;
-                }
-            }
-        });
 
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 			    InputDialog dialog = new InputDialog(shell);
-			    Integer size = dialog.open();
-				lexiControl.addRectGlyph(rectangleBorderColor, rectangleFillColor, size); 
+                dialog.open("shape");
+                
+                Integer size = dialog.getSize();
+                RGB borderColor = dialog.getBorderColor();
+                if(borderColor==null) {
+                    borderColor = new RGB(0,0,0);
+                }
+                
+                RGB fillColor = dialog.getFillColor();
+                if(fillColor==null) {
+                    fillColor = new RGB(255,255,255);
+                }
+				lexiControl.addRectGlyph(borderColor, fillColor, size); 
 				updateUI();
 			}
 		});
@@ -531,8 +379,20 @@ public class LilLexiUI
 
             public void widgetSelected(SelectionEvent e) {
                 InputDialog dialog = new InputDialog(shell);
-                Integer size = dialog.open();
-                lexiControl.addTriangleGlyph(triangleBorderColor, triangleFillColor, size); 
+                dialog.open("shape");
+                Integer size = dialog.getSize();
+                
+                RGB borderColor = dialog.getBorderColor();
+                if(borderColor==null) {
+                    borderColor = new RGB(0,0,0);
+                }
+                
+                RGB fillColor = dialog.getFillColor();
+                if(fillColor==null) {
+                    fillColor = new RGB(255,255,255);
+                }
+                
+                lexiControl.addTriangleGlyph(borderColor, fillColor, size); 
                 updateUI();
             }
         });
@@ -540,8 +400,20 @@ public class LilLexiUI
 		insertCircleItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 InputDialog dialog = new InputDialog(shell);
-                Integer size = dialog.open();
-                lexiControl.addCircleGlyph(circleBorderColor, circleFillColor, size); 
+                dialog.open("shape");
+                Integer size = dialog.getSize();
+                
+                RGB borderColor = dialog.getBorderColor();
+                if(borderColor==null) {
+                    borderColor = new RGB(0,0,0);
+                }
+                
+                RGB fillColor = dialog.getFillColor();
+                if(fillColor==null) {
+                    fillColor = new RGB(255,255,255);
+                }
+                
+                lexiControl.addCircleGlyph(borderColor, fillColor, size); 
                 updateUI();
             }
         });
@@ -551,7 +423,8 @@ public class LilLexiUI
 		insertImageItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 			    InputDialog sizeDialog = new InputDialog(shell);
-                Integer size = sizeDialog.open();
+                sizeDialog.open("image");
+                Integer size = sizeDialog.getSize();
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterExtensions(new String[] {"*.jpg", "*.png", "*.gif"});
 				String result = dialog.open();
@@ -629,7 +502,9 @@ public class LilLexiUI
 	public void setController(LilLexiControl lc) { lexiControl = lc; }
 	
 	class InputDialog extends Dialog {
-	    Integer value;
+	    Integer size;
+	    RGB borderColor;
+	    RGB fillColor;
 
 	    /**
 	     * @param parent
@@ -645,13 +520,25 @@ public class LilLexiUI
 	    public InputDialog(Shell parent, int style) {
 	      super(parent, style);
 	    }
-
+	    
+	    public Integer getSize() {
+	        return size;
+	    }
+	    
+	    public RGB getBorderColor() {
+            return borderColor;
+        }
+	    
+	    public RGB getFillColor() {
+            return fillColor;
+        }
+	    
 	    /**
 	     * Makes the dialog visible.
 	     * 
 	     * @return
 	     */
-	    public Integer open() {
+	    public void open(String type) {
 	      Shell parent = getParent();
 	      final Shell shell =
 	      new Shell(parent, SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
@@ -663,21 +550,55 @@ public class LilLexiUI
 	      label.setText("Please enter size (Integer):");
 
 	      final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
+	      
+	      
+	      if(type.equals("shape")) {
+	          
+	          final Button buttonBorderColor = new Button(shell, SWT.PUSH);
+	          buttonBorderColor.setText("Select Border Color");
+	          
+	          final Button buttonFillColor = new Button(shell, SWT.PUSH);
+	          buttonFillColor.setText("Select Fill Color");
+	          
+	          ColorDialog cdBorder = new ColorDialog(shell);
+	          cdBorder.setText("Choose a border color");
+	          
+	          ColorDialog cdFill = new ColorDialog(shell);
+	          cdFill.setText("Choose a fill color");
+	          
+	          buttonBorderColor.addListener(SWT.Selection, new Listener() {
+	              public void handleEvent(Event event) {
+	                 borderColor = cdBorder.open();
+	              }
+	            });
+	        
+	          buttonFillColor.addListener(SWT.Selection, new Listener() {
+	            public void handleEvent(Event event) {
+	               fillColor = cdFill.open();
+	            }
+	          });
+	          
+	      }
+	      
+	      
 
 	      final Button buttonOK = new Button(shell, SWT.PUSH);
 	      buttonOK.setText("Ok");
 	      buttonOK.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
+	      
+	      
+          
 	      text.addListener(SWT.Modify, new Listener() {
 	        public void handleEvent(Event event) {
 	          try {
-	            value = Integer.valueOf(text.getText());
+	            size = Integer.valueOf(text.getText());
 	            buttonOK.setEnabled(true);
 	          } catch (Exception e) {
 	            buttonOK.setEnabled(false);
 	          }
 	        }
 	      });
+	      
 
 	      buttonOK.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event event) {
@@ -703,7 +624,6 @@ public class LilLexiUI
 	          display.sleep();
 	      }
 
-	      return value;
 	    }
 
 	  }
