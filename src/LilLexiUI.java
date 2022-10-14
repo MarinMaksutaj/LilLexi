@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.events.KeyEvent;
@@ -519,16 +520,9 @@ public class LilLexiUI
 
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (rectangleEndPosition != null) {
-					lexiControl.addRectGlyph(rectangleEndPosition, rectangleBorderColor, rectangleFillColor);
-					rectangleEndPosition = null;
-					triangleEndPosition = null;
-					circleEndPosition = null;
-					imageEndPosition = null;
-					updateUI();
-					return;
-				}
-				lexiControl.addRectGlyph(rectangleBorderColor, rectangleFillColor); 
+			    InputDialog dialog = new InputDialog(shell);
+			    Integer size = dialog.open();
+				lexiControl.addRectGlyph(rectangleBorderColor, rectangleFillColor, size); 
 				updateUI();
 			}
 		});
@@ -536,32 +530,18 @@ public class LilLexiUI
 		insertTriangleItem.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent e) {
-                if (triangleEndPosition != null) {
-                    lexiControl.addTriangleGlyph(triangleEndPosition, triangleBorderColor, triangleFillColor);
-                    triangleEndPosition = null;
-					rectangleEndPosition = null;
-					circleEndPosition = null;
-					imageEndPosition = null; 
-                    updateUI();
-                    return;
-                }
-                lexiControl.addTriangleGlyph(triangleBorderColor, triangleFillColor); 
+                InputDialog dialog = new InputDialog(shell);
+                Integer size = dialog.open();
+                lexiControl.addTriangleGlyph(triangleBorderColor, triangleFillColor, size); 
                 updateUI();
             }
         });
 		
 		insertCircleItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                if (circleEndPosition != null) {
-                    lexiControl.addCircleGlyph(circleEndPosition, circleBorderColor, circleFillColor);
-                    circleEndPosition = null;
-					rectangleEndPosition = null;
-					triangleEndPosition = null;
-					imageEndPosition = null; 
-                    updateUI();
-                    return;
-                }
-                lexiControl.addCircleGlyph(circleBorderColor, circleFillColor); 
+                InputDialog dialog = new InputDialog(shell);
+                Integer size = dialog.open();
+                lexiControl.addCircleGlyph(circleBorderColor, circleFillColor, size); 
                 updateUI();
             }
         });
@@ -570,20 +550,13 @@ public class LilLexiUI
 		// when the user clicks insert image, open a file dialog
 		insertImageItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+			    InputDialog sizeDialog = new InputDialog(shell);
+                Integer size = sizeDialog.open();
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterExtensions(new String[] {"*.jpg", "*.png", "*.gif"});
 				String result = dialog.open();
 				if (result != null) {
-					if (imageEndPosition != null) {
-						lexiControl.addImageGlyph(imageEndPosition, result);
-						imageEndPosition = null;
-						rectangleEndPosition = null;
-						triangleEndPosition = null;
-						circleEndPosition = null;
-						updateUI();
-						return;
-					}
-					lexiControl.addImageGlyph(result);
+					lexiControl.addImageGlyph(result, size);
 					updateUI();
 				}
 			}
@@ -654,6 +627,87 @@ public class LilLexiUI
 	 * setController
 	 */
 	public void setController(LilLexiControl lc) { lexiControl = lc; }
+	
+	class InputDialog extends Dialog {
+	    Integer value;
+
+	    /**
+	     * @param parent
+	     */
+	    public InputDialog(Shell parent) {
+	      super(parent);
+	    }
+
+	    /**
+	     * @param parent
+	     * @param style
+	     */
+	    public InputDialog(Shell parent, int style) {
+	      super(parent, style);
+	    }
+
+	    /**
+	     * Makes the dialog visible.
+	     * 
+	     * @return
+	     */
+	    public Integer open() {
+	      Shell parent = getParent();
+	      final Shell shell =
+	      new Shell(parent, SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+	      shell.setText("Input size");
+
+	      shell.setLayout(new GridLayout(2, true));
+
+	      Label label = new Label(shell, SWT.NULL);
+	      label.setText("Please enter size (Integer):");
+
+	      final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
+
+	      final Button buttonOK = new Button(shell, SWT.PUSH);
+	      buttonOK.setText("Ok");
+	      buttonOK.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+	      text.addListener(SWT.Modify, new Listener() {
+	        public void handleEvent(Event event) {
+	          try {
+	            value = Integer.valueOf(text.getText());
+	            buttonOK.setEnabled(true);
+	          } catch (Exception e) {
+	            buttonOK.setEnabled(false);
+	          }
+	        }
+	      });
+
+	      buttonOK.addListener(SWT.Selection, new Listener() {
+	        public void handleEvent(Event event) {
+	          shell.dispose();
+	        }
+	      });
+
+	      
+	      shell.addListener(SWT.Traverse, new Listener() {
+	        public void handleEvent(Event event) {
+	          if(event.detail == SWT.TRAVERSE_ESCAPE)
+	            event.doit = false;
+	        }
+	      });
+
+	      text.setText("");
+	      shell.pack();
+	      shell.open();
+
+	      Display display = parent.getDisplay();
+	      while (!shell.isDisposed()) {
+	        if (!display.readAndDispatch())
+	          display.sleep();
+	      }
+
+	      return value;
+	    }
+
+	  }
+
 	
 }
 

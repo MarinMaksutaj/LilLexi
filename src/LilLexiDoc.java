@@ -1,10 +1,7 @@
-
-/*
-*  Name: Marin Maksutaj & Shyambhavi 
-*  Course: CSC352
-*  Description: This file contains the main classes and methods used to implement the Lil Lexi Document Editor.
-*/
-
+/**
+ * Lil Lexi Document Model
+ * 
+ */
 import java.util.List;
 import java.util.Set;
 import java.io.BufferedReader;
@@ -18,178 +15,124 @@ import org.eclipse.swt.graphics.*;
 
 
 /**
- * LilLexiDoc is the class used to represent the document. It contains
- * the Composit pattern and the Glyphs that are added to the document.
+ * LilLexiDoc uses the Glyph class and Composite pattern
  */
 public class LilLexiDoc 
 {
 	private LilLexiUI ui;
+	private String docName;
+	private int pageWidth;
+	private int pageHeight;
+	private int numColumns;
+	private Point cursorPosition;
 	private Composition composition;
 	private Compositor compositor;
-
 	/**
-	 * Constructor for LilLexiDoc
+	 * Ctor
 	 */
 	public LilLexiDoc() 
 	{
+		docName = "Untitled";
+		pageWidth = 800;
+		pageHeight = 800;
+		numColumns = 40;
+		cursorPosition = new Point(0,0);
 		composition = new Composition();
 		compositor = new SimpleCompositor();
 	
 	}
 	
 	/**
-	 * setter for the UI
+	 * setUI
 	 */
 	public void setUI(LilLexiUI ui) {this.ui = ui;}
 
 	/**
-	 * Method to add a char glyph to the document
+	 * add a char
 	 */
 	public void addCharGlyph(char c, RGB color, String fontName, int fontSize)
 	{
 		CharGlyph cg = new CharGlyph(c);
 		cg.setColor(color);
 		cg.setFont(fontName);
-		cg.setSize(fontSize);
+		cg.setSize(fontSize);;
 		composition.add(cg);
 	}
 
 	/**
-	 * Method to add a rectangle glyph to the document. 
-	 * It takes in the border and fill colors.
+	 * add a rectangle
 	 */
-	public void addRectGlyph(RGB borderColor, RGB fillColor)
+	public void addRectGlyph(RGB borderColor, RGB fillColor, Integer size)
 	{
-		RectGlyph rg = new RectGlyph();
+		RectGlyph rg = new RectGlyph(size);
 		rg.setFillColor(fillColor);
 		rg.setBorderColor(borderColor);
 		composition.add(rg);
 	}
 
-	/**
-	 * Method to add a rectangle glyph to the document.
-	 * It takes in the border and fill colors and the end point.
-	 */
-	public void addRectGlyph(Point endPoint, RGB borderColor, RGB fillColor) {
-		RectGlyph rg = new RectGlyph();
-		rg.setFillColor(fillColor);
-		rg.setBorderColor(borderColor);
-		rg.setEndPoint(endPoint);
-		composition.add(rg);
-	}
 	
 	/**
-     * Method to add a triangle glyph to the document.
-	 * It takes in the border and fill colors.
+     * add a triangle
      */
-    public void addTriangleGlyph(RGB borderColor, RGB fillColor)
+    public void addTriangleGlyph(RGB borderColor, RGB fillColor, Integer size)
     {
-        TriangleGlyph tg = new TriangleGlyph();
+        TriangleGlyph tg = new TriangleGlyph(size);
         tg.setFillColor(fillColor);
         tg.setBorderColor(borderColor);
         composition.add(tg);
     }
     
-	/**
-	 * Method to add a triangle glyph to the document.
-	 * It takes in the border and fill colors and the end point.	
-	 */
-    public void addTriangleGlyph(Point endPoint, RGB borderColor, RGB fillColor)
-    {
-        TriangleGlyph tg = new TriangleGlyph();
-        tg.setFillColor(fillColor);
-        tg.setBorderColor(borderColor);
-        tg.setEndPoint(endPoint);
-        composition.add(tg);
-    }
 	
 	/**
-     * Method to add a circle glyph to the document.
-	 * It takes in the border and fill colors.
+     * add a circle
      */
-    public void addCircleGlyph(RGB borderColor, RGB fillColor)
+    public void addCircleGlyph(RGB borderColor, RGB fillColor, Integer size)
     {
-        CircleGlyph cg = new CircleGlyph();
+        CircleGlyph cg = new CircleGlyph(size);
         cg.setFillColor(fillColor);
         cg.setBorderColor(borderColor);
         composition.add(cg);
     }
 
-	/**
-	 * Method to add a circle glyph to the document.
-	 * It takes in the border and fill colors and the end point.
-	 */
-    public void addCircleGlyph(Point endPoint, RGB borderColor, RGB fillColor) {
-        CircleGlyph cg = new CircleGlyph();
-        cg.setFillColor(fillColor);
-        cg.setBorderColor(borderColor);
-        cg.setEndPoint(endPoint);
-        composition.add(cg);
-        
-    }
 
 	/**
-	 * Method to add an image glyph to the document.
-	 * It takes in the image path.
+	 * add an image
 	 */
-	public void addImageGlyph(String fileName) 
+	public void addImageGlyph(String fileName, Integer size) 
 	{
-		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
+		ImageGlyph ig = new ImageGlyph(fileName, size, size);
 		composition.add(ig);
 	} 
 
-	/**
-	 * Method to add an image glyph to the document.
-	 * It takes in the image path and the end point.
-	 */
-	public void addImageGlyph(Point endPoint, String fileName) {
-		ImageGlyph ig = new ImageGlyph(fileName, 100, 100);
-		ig.setEndPoint(endPoint);
-		composition.add(ig);
-	}
-
-	/**
-	 * getter for the composition
-	 */
+	public String getDocName(){return docName;}
+	public int getPageWidth(){return pageWidth;}
+	public int getPageHeight(){return pageHeight;}
+	public int getNumColumns(){return numColumns;}
+	public Point getCursorPosition(){return cursorPosition;}
 	public Composition getComposition(){return composition;}
-
-	/**
-	 * getter for the compositor
-	 */
 	public Compositor getCompositor(){return compositor;}
-
-	/**
-	 * Method to set the composition
-	 */
+	public void setDocName(String docName){this.docName = docName;}
+	public void setPageWidth(int pageWidth){this.pageWidth = pageWidth;}
+	public void setPageHeight(int pageHeight){this.pageHeight = pageHeight;}
+	public void setNumColumns(int numColumns){this.numColumns = numColumns;}
+	public void setCursorPosition(Point cursorPosition){this.cursorPosition = cursorPosition;}
 	public void setComposition(Composition composition){this.composition = composition;}
-
-	/**
-	 * Method to set the compositor
-	 */
 	public void setCompositor(Compositor compositor){this.compositor = compositor;}
-
-	/**
-	 * Method to backspace a glyph
-	 */
 	public void backspace()
 	{
 			compositor.backspace(composition);
 	}
-
-	/**
-	 * Method to line break a glyph
-	 */
 	public void lineBreak()
 	{
 		compositor.lineBreak(composition);
 	}
 
 	/**
-	 * toString method for the document
+	 * toString
 	 */
 	public String toString()
 	{
-		String s = "LilLexiDoc: ";
+		String s = "LilLexiDoc: " + docName + " " + pageWidth + " " + pageHeight + " " + numColumns + " " + cursorPosition;
 		for (Glyph g: composition.getGlyphs())
 		{
 			s += g.toString();
@@ -198,7 +141,7 @@ public class LilLexiDoc
 	}
 
 	/**
-	 * draw method for the document. Calls the compose method of the compositor.
+	 * draw
 	 */
 	public void draw()
 	{
@@ -207,57 +150,46 @@ public class LilLexiDoc
 		
 	}
 
-	/**
-	 * Method to undo the last action
-	 */
 	public void undo() {
 		compositor.undo(composition);
 	}
 
-	/**
-	 * Method to redo the last action
-	 */
 	public void redo() {
 		compositor.redo(composition);
 	}
 }
 
 
+/**
+ * Point
+ */
+
+
 
 
 /**
- * Glyph class for the LilLexi project. It is an abstract class.
- * It is used by the other glyph classes to implement the methods.
+ * Glyph
  */
 abstract class Glyph
 {
 	private Point pos;
 
 	/**
-	 * Constructor for the glyph class
+	 * Ctor
 	 */
 	public Glyph() 
 	{
 		pos = new Point(0,0);
 	}
-
-	/**
-	 * Constructor for the glyph class. It takes in the position of the glyph.
-	 */
 	public Glyph(Point pos) 
 	{
 		this.pos = pos;
 	}
-
-	/**
-	 * getter for the position of the glyph
-	 */
 	public Point getPos(){return pos;}
 }
 
 /**
- * Compositor class for the LilLexi project. It is an interface.
- * It is used by the other compositor classes to implement the methods.
+ * Compositor
  */
 interface Compositor
 {
@@ -271,20 +203,19 @@ interface Compositor
 
 /**
  * Simple Compositor 
- * It is used to just draw the glyphs in the order they were added to the composition.
+ * It is used to just draw the glyphs in the order they were added to the composition
  */
 class SimpleCompositor implements Compositor
 {
-
+	/**
+	 * compose
+	 */
 	private LilLexiUI ui;
 	private Point cursor;
 	private List<Point> previousPositions;
 	private int yOffSet;
 	private List<Integer> previousYOffSets;
 	
-	/**
-	 * Constructor for the Simple Compositor
-	 */
 	public SimpleCompositor () {
 		this.cursor = new Point(0, 0);
 		this.previousPositions = new ArrayList<Point>();
@@ -292,17 +223,14 @@ class SimpleCompositor implements Compositor
 		this.previousYOffSets = new ArrayList<Integer>();
 	}
 
-	/**
-	 * Method to undo the last action
-	 */
 	public void undo (Composition c) {
 		if (!TimeMachine.getInstance().canUndo()) {
 			return;
 		}
+		System.out.println("undoin");
 		TimeMachine.getInstance().undo();
-		// perform a deep copy of the current time machine state, and set it as the composition
-		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), 
-		TimeMachine.getInstance().getCursor().getY());
+		// perform a deep copy of the current time machine state
+		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), TimeMachine.getInstance().getCursor().getY());
 		int newYOffSet = Integer.valueOf(TimeMachine.getInstance().getYOffSet());
 		List<Glyph> newGlyphs = new ArrayList<Glyph>();
 		for (Glyph g : TimeMachine.getInstance().getGlyphs()) {
@@ -324,17 +252,13 @@ class SimpleCompositor implements Compositor
 		this.previousPositions = newPreviousPositions;
 	}
 
-	/**
-	 * Method to redo the last action
-	 */
 	public void redo (Composition c) {
 		if (!TimeMachine.getInstance().canRedo()) {
 			return;
 		}
 		TimeMachine.getInstance().redo();
 		// perform a deep copy of the current time machine state
-		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), 
-		TimeMachine.getInstance().getCursor().getY());
+		Point newCursor = new Point(TimeMachine.getInstance().getCursor().getX(), TimeMachine.getInstance().getCursor().getY());
 		int newYOffSet = Integer.valueOf(TimeMachine.getInstance().getYOffSet());
 		List<Glyph> newGlyphs = new ArrayList<Glyph>();
 		for (Glyph g : TimeMachine.getInstance().getGlyphs()) {
@@ -356,17 +280,13 @@ class SimpleCompositor implements Compositor
 		this.previousPositions = newPreviousPositions;
 	}
 
-	/**
-	 * Method to add the UI to the compositor
-	 */
 	public void addUI (LilLexiUI ui) {this.ui = ui;}
-
-	/**
-	 * Method to backspace the last glyph
-	 */
 	public void backspace (Composition c) {
 		
-		spellCheck(c); 
+		spellCheck(c); // should we put it somewhere else?
+		System.out.println("Size of glyphs " + c.getGlyphs().size());
+		System.out.println("size of previous positions: " + previousPositions.size());
+		System.out.println("size of previous y offsets: " + previousYOffSets.size());
 		if (cursor.getX() == 0 && cursor.getY() == 0) {
 			return;
 		}
@@ -386,10 +306,6 @@ class SimpleCompositor implements Compositor
 		previousYOffSets.remove(previousYOffSets.size()-1);
 	
 	}
-
-	/**
-	 * Method to add a line break
-	 */
 	public void lineBreak (Composition c) {
 		
 		spellCheck(c);
@@ -407,23 +323,31 @@ class SimpleCompositor implements Compositor
 		this.yOffSet = 30;
 		
 	}
-
-	/**
-	 * Method to compose the composition
-	 */
 	public void compose(Composition c)
 	{
 		
 	    spellCheck(c);
 		List<Glyph> glyphs = c.getGlyphs();
+		//System.out.println(glyphs.size());
+		//System.out.println(cursor.getX());
+		//System.out.println(cursor.getY());
 		for (Glyph g: glyphs)
 		{
 			if (g.getPos() != null)
 			{
+				//System.out.println("Non null pos:" + g.getPos().getX() + " " + g.getPos().getY());
+				//System.out.println("hello");
 				continue;
 			}
 			previousPositions.add(new Point(cursor.getX(), cursor.getY()));
 			previousYOffSets.add(yOffSet);
+			
+			// check what type of glyph it is and draw it
+			// if it is a character glyph, draw it, move the cursor by a fixed amount and continue
+			// if it is a rectangle glyph, draw it and continue, move the cursor by a the width of the rectangle
+			// if it is an image glyph, draw it and continue, move the cursor by a the width of the image
+			// if cursor reaches the end of the line, move it to the next line
+			// if cursor reaches the end of the page, don't draw anything
 
 			if (g instanceof CharGlyph)
 			{
@@ -450,12 +374,7 @@ class SimpleCompositor implements Compositor
 			{
 				RectGlyph rg = (RectGlyph)g;
 				rg.setPos(new Point(cursor.getX(), cursor.getY()));
-				// if rectangle has an endPoint, change it's width and height accordingly
-				if (rg.getEndPoint() != null)
-				{
-					rg.setWidth(rg.getEndPoint().getX() - rg.getPos().getX());
-					rg.setHeight(rg.getEndPoint().getY() - rg.getPos().getY());
-				}
+		
 				if (yOffSet < rg.getHeight() + 10)
 				{
 					yOffSet = rg.getHeight() + 10;
@@ -476,12 +395,7 @@ class SimpleCompositor implements Compositor
             {
 			    TriangleGlyph tg = (TriangleGlyph)g;
 			    tg.setPos(new Point(cursor.getX(), cursor.getY()));
-                // if rectangle has an endPoint, change it's width and height accordingly
-                if (tg.getEndPoint() != null)
-                {
-                    tg.setWidth(tg.getEndPoint().getX() - tg.getPos().getX());
-                    tg.setHeight(tg.getEndPoint().getY() - tg.getPos().getY());
-                }
+               
                 if (yOffSet < tg.getHeight() + 10)
                 {
                     yOffSet = tg.getHeight() + 10;
@@ -502,11 +416,7 @@ class SimpleCompositor implements Compositor
             {
 			    CircleGlyph cg = (CircleGlyph)g;
 			    cg.setPos(new Point(cursor.getX(), cursor.getY()));
-                // if rectangle has an endPoint, change it's width and height accordingly
-                if (cg.getEndPoint() != null)
-                {
-                    cg.setRadius(cg.getEndPoint().getX() - cg.getPos().getX());
-                }
+                
                 if (yOffSet < cg.getRadius() + 10)
                 {
                     yOffSet = cg.getRadius() + 10;
@@ -527,11 +437,7 @@ class SimpleCompositor implements Compositor
 			{
 				ImageGlyph ig = (ImageGlyph)g;
 				ig.setPos(new Point(cursor.getX(), cursor.getY()));
-				if (ig.getEndPoint() != null)
-				{
-					ig.setWidth(ig.getEndPoint().getX() - ig.getPos().getX());
-					ig.setHeight(ig.getEndPoint().getY() - ig.getPos().getY());
-				}
+				
 				if (yOffSet < ig.getHeight() + 10)
 				{
 					yOffSet = ig.getHeight() + 10;
@@ -549,14 +455,10 @@ class SimpleCompositor implements Compositor
 			}
 		}
 		// add previous state in TimeMachine
-		TimeMachine.getInstance().addState(cursor, previousPositions, yOffSet, 
-		previousYOffSets, c.getGlyphs());
+		TimeMachine.getInstance().addState(cursor, previousPositions, yOffSet, previousYOffSets, c.getGlyphs());
 		
 	}
 
-	/**
-	 * Method to spell check the text in the text editor.
-	 */
 	public void spellCheck(Composition c)
 	{
 		
@@ -597,16 +499,14 @@ class SimpleCompositor implements Compositor
 
 
 
-/*
- * Point class used to store the position of a glyph.
- */
+
 class Point
 {
 	private int x;
 	private int y;
 	
 	/**
-	 * Constructor for Point class.
+	 * Ctor
 	 */
 	public Point(int x, int y)
 	{
@@ -615,7 +515,7 @@ class Point
 	}
 	
 	/**
-	 * getters and setters
+	 * gets
 	 */
 	public int getX(){return x;}
 	public int getY(){return y;}
@@ -624,15 +524,12 @@ class Point
 }
 
 
-/*
- * Composition class used to store the glyphs in a composition.
- */
 class Composition
 {
 	private List<Glyph> glyphs;
 	
 	/**
-	 * Constructor for Composition class.
+	 * Ctor
 	 */
 	public Composition() 
 	{
@@ -640,7 +537,7 @@ class Composition
 	}
 	
 	/**
-	 * Add a glyph to the composition.
+	 * add
 	 */
 	public void add(Glyph g)
 	{
@@ -648,15 +545,21 @@ class Composition
 	}
 	
 	/**
-	 * Get the glyphs in the composition.
+	 * insert
 	 */
+	public void insert(Glyph g)
+	{
+		glyphs.add(g);
+	}
+	
 	public List<Glyph> getGlyphs() {
 		return this.glyphs;
 	}
 
-	/**
-	 * Set the glyphs in the composition.
-	 */
+	public void  removeLast() {
+		glyphs.remove(glyphs.size() - 1);
+	}
+
 	public void setGlyphs(List<Glyph> glyphs) {
 		this.glyphs = glyphs;
 	}
@@ -664,9 +567,6 @@ class Composition
 }
 
 
-/*
- * CharGlyph class used to store the character and position of a character glyph.
- */
 class CharGlyph extends Glyph 
 {
 	private char c;
@@ -677,7 +577,7 @@ class CharGlyph extends Glyph
 	private boolean gramaticallyCorrect;
 	
 	/**
-	 * Constructor for CharGlyph class.
+	 * Ctor
 	 */
 	public CharGlyph(char c) 
 	{
@@ -686,9 +586,6 @@ class CharGlyph extends Glyph
 		this.gramaticallyCorrect = true;
 	}
 
-	/**
-	 * getters and setters
-	 */
 	public void setPos(Point pos){this.pos = pos;}
 	public Point getPos(){return pos;}
 	public RGB getColor(){return color;}
@@ -699,13 +596,17 @@ class CharGlyph extends Glyph
 	public void setSize(int size){this.size = size;}
 	public void setGramaticallyCorrect(boolean b){this.gramaticallyCorrect = b;}
 	public boolean getGramaticallyCorrect() {return gramaticallyCorrect; }
+	
+	/**
+	 * gets
+	 */
 	public char getChar(){return c;}
 
 }
 
 
 /**
- * ImageGlyph class used to store the image and position of an image glyph.
+ * Image Glyph
  */
 class ImageGlyph extends Glyph
 {
@@ -714,10 +615,9 @@ class ImageGlyph extends Glyph
 	private int height;
 	private Image image;
 	private Point pos;
-	private Point endPoint;
 	
 	/**
-	 * Constructor for ImageGlyph class.	
+	 * Ctor
 	 */
 	public ImageGlyph(String fileName, int width, int height) 
 	{
@@ -725,11 +625,12 @@ class ImageGlyph extends Glyph
 		this.fileName = fileName;
 		this.width = width;
 		this.height = height;
+		// create the image using SWT
 		image = new Image(null, fileName);
 	}
 	
 	/**
-	 * getters and setters
+	 * gets
 	 */
 	public String getFileName(){return fileName;}
 	public int getWidth(){return width;}
@@ -739,48 +640,40 @@ class ImageGlyph extends Glyph
 	public Point getPos(){return pos;}
 	public void setWidth(int width){this.width = width;}
 	public void setHeight(int height){this.height = height;}
-	public Point getEndPoint(){return endPoint;}
-	public void setEndPoint(Point endPoint){this.endPoint = endPoint;}
 
 }
 
 
 
 /**
- * RectGlyph class used to store the position and dimensions of a rectangle glyph.
+ * Rectangle Glyph
  */
 class RectGlyph extends Glyph
 {
 	private Point pos;
 	private int width;
 	private int height;
-	private Point endPoint;
 	private RGB fillColor;
 	private RGB borderColor;
+	
+	public RectGlyph(Integer size) 
+    {
+        super();
+        width = size;
+        height = size;
+        fillColor = new RGB(255, 255, 255);
+        borderColor = new RGB(0, 0, 0);
+        System.out.println(1);
+    }
 
-	/**
-	 * Constructor for RectGlyph class.
-	 */
-	public RectGlyph() 
-	{
-		super();
-		width = 60;
-		height = 60;
-		fillColor = new RGB(255, 255, 255);
-		borderColor = new RGB(0, 0, 0);
-	}
-
-	/**
-	 * getters and setters
-	 */
 	public void setPos(Point pos){this.pos = pos;}
 	public Point getPos(){return pos;}
+
+
 	public void setWidth(int width){this.width = width;}
 	public void setHeight(int height){this.height = height;}
 	public int getWidth(){return width;}
 	public int getHeight(){return height;}
-	public void setEndPoint(Point p) {this.endPoint = p;}
-	public Point getEndPoint() {return this.endPoint;}
 	public RGB getBorderColor(){return borderColor;}
 	public RGB getFillColor(){return fillColor;}
 	public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
@@ -789,36 +682,29 @@ class RectGlyph extends Glyph
 }
 
 /**
- * CircleGlyph class used to store the position and dimensions of a circle glyph.
+ * Circle Glyph
  */
 class CircleGlyph extends Glyph
 {
     private Point pos;
     private int radius;
-    private Point endPoint;
     private RGB fillColor;
     private RGB borderColor;
 
-	/**
-	 * Constructor for CircleGlyph class.
-	 */
-    public CircleGlyph() 
+    public CircleGlyph(Integer size) 
     {
         super();
-        radius = 60;
+        radius = size;
         fillColor = new RGB(255, 255, 255);
         borderColor = new RGB(0, 0, 0);
     }
 
-	/**
-	 * getters and setters
-	 */
     public void setPos(Point pos){this.pos = pos;}
     public Point getPos(){return pos;}
+
+
     public void setRadius(int radius){this.radius = radius;}
     public int getRadius(){return radius;}
-    public void setEndPoint(Point p) {this.endPoint = p;}
-    public Point getEndPoint() {return this.endPoint;}
     public RGB getBorderColor(){return borderColor;}
     public RGB getFillColor(){return fillColor;}
     public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
@@ -827,40 +713,32 @@ class CircleGlyph extends Glyph
 }
 
 /**
- * TriangleGlyph class used to store the position and dimensions of a triangle glyph.
+ * Triangle Glyph 
  */
 class TriangleGlyph extends Glyph
 {
     private Point pos;
     private int width;
     private int height;
-    private Point endPoint;
     private RGB fillColor;
     private RGB borderColor;
 
-	/**
-	 * Constructor for TriangleGlyph class.
-	 */
-    public TriangleGlyph() 
+    public TriangleGlyph(Integer size) 
     {
         super();
-        width = 60;
-        height = 60;
+        width = size;
+        height = size;
         fillColor = new RGB(255, 255, 255);
         borderColor = new RGB(0, 0, 0);
     }
 
-	/**
-	 * getters and setters
-	 */
     public void setPos(Point pos){this.pos = pos;}
     public Point getPos(){return pos;}
+
     public void setWidth(int width){this.width = width;}
     public void setHeight(int height){this.height = height;}
     public int getWidth(){return width;}
     public int getHeight(){return height;}
-    public void setEndPoint(Point p) {this.endPoint = p;}
-    public Point getEndPoint() {return this.endPoint;}
     public RGB getBorderColor(){return borderColor;}
     public RGB getFillColor(){return fillColor;}
     public void setBorderColor(RGB borderColor){this.borderColor = borderColor;}
@@ -869,18 +747,13 @@ class TriangleGlyph extends Glyph
 }
 
 
-/**
- * SpellChecker class used to check the spelling of the words in the document.
- */
 class SpellChecker 
 {
 	private static SpellChecker instance = null;
+	
 	private static final String DICTIONARY = "dictionary.txt";
 	private Set<String> dict;
 	
-	/**
-	 * getInstance method used to get the instance of the SpellChecker class.
-	 */
 	public static SpellChecker getInstance()
 	{
 		if (instance == null)
@@ -890,9 +763,6 @@ class SpellChecker
 		return instance;
 	}
 	
-	/**
-	 * Constructor for SpellChecker class.
-	 */
 	private SpellChecker() {
 		dict = new HashSet<String>();
 		// open the dictionary
@@ -920,9 +790,6 @@ class SpellChecker
 				}
 	}
 	
-	/**
-	 * check method used to check the spelling of the words in the document.
-	 */
 	public boolean isCorrect(String word)
 	{
 		// strip out punctuation at the end of the word
@@ -945,7 +812,6 @@ class SpellChecker
 
 
 /**
- * TimeMachine class employs a Singleton design pattern. 
  * This class is used to implement the redo and undo functionality
  */
 class TimeMachine {
@@ -958,9 +824,6 @@ class TimeMachine {
 	int index;
 	private static TimeMachine instance;
 	
-	/**
-	 * getInstance method used to get the instance of the TimeMachine class.
-	 */
 	public static TimeMachine getInstance()
 	{
 		if (instance == null)
@@ -970,9 +833,6 @@ class TimeMachine {
 		return instance;
 	}
 	
-	/**
-	 * Constructor for TimeMachine class.
-	 */
 	private TimeMachine()
 	{
 		cursors = new ArrayList<Point>();
@@ -989,11 +849,7 @@ class TimeMachine {
 		glyphs_lists.add(new ArrayList<Glyph>());
 	}
 
-	/**
-	 * addState method used to add the state of the document to the TimeMachine.
-	 */
-	public void addState(Point cursor, List<Point> previousPositions, int yOffSet, 
-	List<Integer> previousYOffSets, List<Glyph> glyphs)
+	public void addState(Point cursor, List<Point> previousPositions, int yOffSet, List<Integer> previousYOffSets, List<Glyph> glyphs)
 	{
 		// check if size is greater than 10, if it is replace oldest state with new one
 		if (cursors.size() > 10)
@@ -1066,20 +922,30 @@ class TimeMachine {
 		}
 	}
 
-	/**
-	 * undo method used to undo the last action.
-	 */
 	public void undo()
 	{
 		if (index > 0)
 		{
 			index--;
 		}
+		
+		// print the current glyph list
 	}
 
-	/**
-	 * redo method used to redo the last action.
-	 */
+	public void printGlyphs() {
+	    System.out.println("size undo: " + cursors.size());
+        System.out.println("undo index: " + index);
+		System.out.println("==================================");
+		for (int i = 0; i < glyphs_lists.size() ; i++) {
+			for (Glyph g : glyphs_lists.get(i)) {
+			    CharGlyph cg = (CharGlyph)g;
+				System.out.print(cg.getChar());
+			}
+			System.out.println();
+		}
+		System.out.println("==================================");
+	}
+
 	public void redo()
 	{
 		if (index < cursors.size() - 1)
@@ -1088,57 +954,36 @@ class TimeMachine {
 		}
 	}
 
-	/**
-	 * getCursor method used to get the cursor position.
-	 */
 	public Point getCursor()
 	{
 		return cursors.get(index);
 	}
 
-	/**
-	 * getPreviousPositions method used to get the previous positions.
-	 */
 	public List<Point> getPreviousPositions()
 	{
 		return previousPositions_lists.get(index);
 	}
 
-	/**
-	 * getYOffSet method used to get the yOffSet.
-	 */
 	public int getYOffSet()
 	{
 		return yOffSets.get(index);
 	}
 
-	/**
-	 * getPreviousYOffSets method used to get the previous yOffSets.
-	 */
 	public List<Integer> getPreviousYOffSets()
 	{
 		return previousYOffSets_lists.get(index);
 	}
 
-	/**
-	 * getGlyphs method used to get the glyphs.
-	 */
 	public List<Glyph> getGlyphs()
 	{
 		return glyphs_lists.get(index);
 	}
 
-	/**
-	 * canUndo method used to check if the TimeMachine can undo.
-	 */
 	public boolean canUndo()
 	{
 		return index > 0;
 	}
 
-	/**
-	 * canRedo method used to check if the TimeMachine can redo.
-	 */
 	public boolean canRedo()
 	{
 		return index < cursors.size() - 1;
