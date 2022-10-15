@@ -16,8 +16,7 @@ import java.util.List;
 
 
 /**
- * LilLexiUI
- * 
+ * LilLexiUI main class.
  */
 public class LilLexiUI
 {
@@ -36,11 +35,10 @@ public class LilLexiUI
 	private boolean spellCheck;
 	
 	/**
-	 * Ctor
+	 * Constructor for LilLexiUI.
 	 */
 	public LilLexiUI() 
 	{
-		//---- create the window and the shell
 		Display.setAppName("Lil Lexi");
 		display = new Display();  
 		shell = new Shell(display);
