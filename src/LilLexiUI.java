@@ -1,7 +1,7 @@
-/**
- * UI for Lil Lexi
- * 
- */
+/*
+*  Course: CSC335
+*  Description: UI class for the LilLexi application.
+*/
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
