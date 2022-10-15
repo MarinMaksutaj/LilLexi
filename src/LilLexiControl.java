@@ -1,8 +1,8 @@
-
-
-/**
- * Controller
- */
+/*
+*  Course: CSC335
+*  Description: Controller class for the LilLexi application.
+* 				This is where the GUI sends commands to the document.
+*/
 import org.eclipse.swt.graphics.RGB;
 
 public class LilLexiControl 
@@ -10,7 +10,8 @@ public class LilLexiControl
 	private LilLexiDoc currentDoc;
 
 	/**
-	 * LilLexiControl
+	 * LilLexiControl constructor.
+	 * Author:  Shyambhavi
 	 */
 	public LilLexiControl( LilLexiDoc doc )
 	{
@@ -18,62 +19,98 @@ public class LilLexiControl
 	}
 	
 	/**
-	 * selectCard  user selects a card
+	 * Method to add a char glyph to the document. Takes the char,
+	 *  the RGB color, font name and font size.
+	 * Author:  Shyambhavi
 	 */
 	void addCharGlyph( char c, RGB color, String fontName, int fontSize)
 	{
 		currentDoc.addCharGlyph( c, color, fontName, fontSize );
 		currentDoc.draw();
 	}
+	/*
+	 * Method to add a rect glyph to the document. Takes the RGB color,
+	 * the fill color and size.
+	 * Author:  Marin Maksutaj
+	 */
 	void addRectGlyph(RGB borderColor, RGB fillColor, Integer size) 
-	{	System.out.println("adding rectangle");
+	{	
 		currentDoc.addRectGlyph(borderColor, fillColor, size);
 		currentDoc.draw();
 	}
 	
+	/*
+	 * Method to add the triangle glyph to the document. Takes the border color,
+	 * the fill color and size.
+	 * Author:  Marin Maksutaj
+	 */
 	void addTriangleGlyph(RGB borderColor, RGB fillColor, Integer size) 
-    {   System.out.println("adding tri1");
+    {   
         currentDoc.addTriangleGlyph(borderColor, fillColor, size);
         currentDoc.draw();
     }
 	
+	/*
+	 * Method to add the cirlce glyph to the document.
+	 * Author:  Shyambhavi
+	 */
 	void addCircleGlyph(RGB borderColor, RGB fillColor, Integer size) 
-    {   //System.out.println("adding something");
+    {   
         currentDoc.addCircleGlyph(borderColor, fillColor, size);
         currentDoc.draw();
     }
 
-
+	/*
+	 * Method to add the image glyph to the document.
+	 * Author:  Marin Maksutaj
+	 */
 	void addImageGlyph( String fileName , Integer size) 
-	{	//System.out.println("adding image glyph");
+	{	
 		currentDoc.addImageGlyph(fileName, size);
 		currentDoc.draw();
 	}
 
+	/*
+	 * Method to backspace the last glyph in the document.
+	 * Author:  Shyambhavi
+	 */
 	void backspace() 
-	{	//System.out.println("backspacing");
+	{	
 		currentDoc.backspace();
 		currentDoc.draw();
 	}
 
+	/*
+	 * Method to line break the document.
+	 * Author:  Marin Maksutaj
+	 */
 	void lineBreak() 
-	{	//System.out.println("line breaking");
+	{	
 		currentDoc.lineBreak();
 		currentDoc.draw();
 	}
 
+	/*
+	 * Method to undo the last action in the document.
+	 * Author:  Shyambhavi
+	 */
 	void undo() 
 	{	
 		currentDoc.undo();
 	}
 
+	/*
+	 * Method to redo the last undo in the document.
+	 * Author:  Marin Maksutaj
+	 */
 	void redo() 
 	{	
 		currentDoc.redo();
 	}
 
-	/**
-	 * quitEditor  user quits
+	/*
+	 * Method to quit the application.
+	 * Author:  Shyambhavi
 	 */
 	void  quitEditor() 
 	{ 
