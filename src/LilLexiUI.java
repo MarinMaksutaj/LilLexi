@@ -36,6 +36,7 @@ public class LilLexiUI
 	
 	/**
 	 * Constructor for LilLexiUI.
+	 * Author: Marin Maksutaj 
 	 */
 	public LilLexiUI() 
 	{
@@ -53,11 +54,16 @@ public class LilLexiUI
 		spellCheck = false;
 	}
 	
+	/**
+	 * getters for height and width 
+	 * Author: Marin Maksutaj 
+	 */
 	public int getWidth() {return this.canvasWidth;}
 	public int getHeight() {return this.canvasHeight;}
 		
 	/**
 	 * start the editor
+	 * Author: Shyambhavi
 	 */
 	public void start()
 	{	
@@ -176,6 +182,11 @@ public class LilLexiUI
 			}
 		});	
 		
+		
+		/**
+		 * Listens to the keyboard events and adds char glyph, backspace or line break accordingly
+		 * Author: Marin Maksutaj 
+		 */
         
         canvas.addKeyListener(new KeyListener() {
         	public void keyPressed(KeyEvent e) {
@@ -201,6 +212,11 @@ public class LilLexiUI
         	public void keyReleased(KeyEvent e) {}
         });
 
+        
+        /**
+         * ScrollBar for the canvas
+         * Author: Shyambhavi
+         */
         final ScrollBar vBar = canvas.getVerticalBar();       
         Rectangle size = canvas.getBounds();
         vBar.setMaximum(size.height/2);
@@ -241,6 +257,11 @@ public class LilLexiUI
 		// add a color picker for the font color
 		MenuItem toolsFontColorItem = new MenuItem(toolsMenu, SWT.PUSH);
 		toolsFontColorItem.setText("Font Color");
+		
+		/**
+         * Listens to selection event of menu item font color and opens a dialog box
+         * Author: Marin Maksutaj 
+         */
 		toolsFontColorItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				ColorDialog cd = new ColorDialog(shell);
@@ -253,6 +274,11 @@ public class LilLexiUI
 				}
 			}
 		});
+		
+		/**
+         * Listens to selection event of menu item font family and opens a dialog box
+         * Author: Shyambhavi
+         */
 
 		// add a font picker
 		MenuItem toolsFontItem = new MenuItem(toolsMenu, SWT.PUSH);
@@ -272,6 +298,11 @@ public class LilLexiUI
 			}
 		});
 
+		
+		/**
+         * Listens to selection event of menu item font size and opens a dialog box
+         * Author: Marin Maksutaj 
+         */
 		// add a font size picker
 		MenuItem toolsFontSizeItem = new MenuItem(toolsMenu, SWT.PUSH);
 		toolsFontSizeItem.setText("Font Size");
@@ -293,6 +324,11 @@ public class LilLexiUI
 		// add a dark mode toggle
         MenuItem toolsDarkModeItem = new MenuItem(toolsMenu, SWT.PUSH);
         toolsDarkModeItem.setText("Dark Mode");
+        
+        /**
+         * Listens to selection event of menu item dark mode and enables dark mode
+         * Author: Marin Maksutaj 
+         */
         toolsDarkModeItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
                 if (darkMode) {
@@ -306,12 +342,22 @@ public class LilLexiUI
         
         MenuItem toolsUndoItem = new MenuItem(toolsMenu, SWT.PUSH);
         toolsUndoItem.setText("Undo");
+        
+        /**
+         * Listens to selection event of menu item undo and performs undo
+         * Author: Shyambhavi
+         */
         toolsUndoItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 lexiControl.undo();
                 updateUI();
             }
         });
+        
+        /**
+         * Listens to selection event of menu item redo and performs redo
+         * Author: Shyambhavi
+         */
 
         MenuItem toolsRedoItem = new MenuItem(toolsMenu, SWT.PUSH);
         toolsRedoItem.setText("Redo");
@@ -322,9 +368,15 @@ public class LilLexiUI
             }
         });
         
+        
+        
         MenuItem spellCheckItem = new MenuItem(toolsMenu, SWT.PUSH);
         spellCheckItem.setText("Spell Checker");
-     // Spell check menu item. Toggle spell check on and off.
+        
+        /**
+         * Listens to selection event of menu item spell check and toggles it on and off
+         * Author: Marin Maksutaj
+         */
         spellCheckItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 if (spellCheck) {
@@ -353,6 +405,10 @@ public class LilLexiUI
 	    insertTriangleItem = new MenuItem(insertMenu, SWT.PUSH);
 	    insertTriangleItem.setText("Triangle");
 
+	    /**
+         * Listens to selection event of menu item insert rectangle and opens a dialog box
+         * Author: Shyambhavi
+         */
 		insertRectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 			    InputDialog dialog = new InputDialog(shell);
@@ -372,6 +428,11 @@ public class LilLexiUI
 				updateUI();
 			}
 		});
+		
+		/**
+         * Listens to selection event of menu item insert triangle and opens a dialog box
+         * Author: Marin Maksutaj
+         */
 		
 		insertTriangleItem.addSelectionListener(new SelectionAdapter() {
 
@@ -395,6 +456,10 @@ public class LilLexiUI
             }
         });
 		
+		/**
+         * Listens to selection event of menu item insert circle and opens a dialog box
+         * Author: Shyambhavi
+         */
 		insertCircleItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 InputDialog dialog = new InputDialog(shell);
@@ -417,7 +482,11 @@ public class LilLexiUI
         });
 
 
-		// when the user clicks insert image, open a file dialog
+		/**
+         * Listens to selection event of menu item insert image and opens a dialog box
+         * Author: Marin Maksutaj
+         */
+	
 		insertImageItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 			    InputDialog sizeDialog = new InputDialog(shell);
@@ -442,6 +511,10 @@ public class LilLexiUI
 	    helpGetHelpItem = new MenuItem(helpMenu, SWT.PUSH);
 	    helpGetHelpItem.setText("Get Help");
 	    
+	    /**
+         * Listens to selection event of menu item exit and exits canvas
+         * Author: Shyambhavi
+         */
 	    toolsExitItem.addSelectionListener(new SelectionListener() {
 	    	public void widgetSelected(SelectionEvent event) {
 	    		shell.close();
@@ -455,6 +528,10 @@ public class LilLexiUI
 
 		
 
+	    /**
+         * Listens to selection event of menu item get help
+         * Author:  Marin Maksutaj
+         */
 	    helpGetHelpItem.addSelectionListener(new SelectionListener() {
 	    	public void widgetSelected(SelectionEvent event) {
 	    	}
@@ -464,6 +541,11 @@ public class LilLexiUI
 	    
         Menu systemMenu = Display.getDefault().getSystemMenu();
         MenuItem[] mi = systemMenu.getItems();
+        
+        /**
+         * Listens to selection event of system menu
+         * Author: Shyambhavi
+         */
         mi[0].addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event){
             	System.out.println("About");
@@ -482,7 +564,8 @@ public class LilLexiUI
 	} 
 
 	/**
-	 * updateUI
+	 * updates UI
+	 * Author: Marin Maksutaj
 	 */
 	public void updateUI()
 	{
@@ -491,11 +574,13 @@ public class LilLexiUI
 	}
 	
 	/**
-	 * setCurrentDoc
+	 * sets CurrentDoc
+	 * Author: Shyambhavi
 	 */
 	public void setCurrentDoc(LilLexiDoc cd) { currentDoc = cd; }
 	/**
-	 * setController
+	 * sets Controller
+	 * Author: Marin Maksutaj
 	 */
 	public void setController(LilLexiControl lc) { lexiControl = lc; }
 	
@@ -505,35 +590,51 @@ public class LilLexiUI
 	    RGB fillColor;
 
 	    /**
+	     * Constructor for input dialog
 	     * @param parent
+	     * Author: Shyambhavi
 	     */
 	    public InputDialog(Shell parent) {
 	      super(parent);
 	    }
 
 	    /**
+	     * Constructor for input dialog
 	     * @param parent
 	     * @param style
+	     * Author: Shyambhavi
 	     */
 	    public InputDialog(Shell parent, int style) {
 	      super(parent, style);
 	    }
 	    
+	    /*
+	     * gets size
+	     * Author: Marin Maksutaj
+	     */
 	    public Integer getSize() {
 	        return size;
 	    }
 	    
+	    /*
+         * gets border color
+         * Author: Marin Maksutaj
+         */
 	    public RGB getBorderColor() {
             return borderColor;
         }
 	    
+	    /*
+         * gets fill color
+         * Author: Marin Maksutaj
+         */
 	    public RGB getFillColor() {
             return fillColor;
         }
 	    
 	    /**
 	     * Makes the dialog visible.
-	     * 
+	     * Author: Shyambhavi
 	     * @return
 	     */
 	    public void open(String type) {
@@ -564,12 +665,20 @@ public class LilLexiUI
 	          ColorDialog cdFill = new ColorDialog(shell);
 	          cdFill.setText("Choose a fill color");
 	          
+	          /**
+	           * Adds listener to border color select button
+	           * Author: Shyambhavi
+	           */
 	          buttonBorderColor.addListener(SWT.Selection, new Listener() {
 	              public void handleEvent(Event event) {
 	                 borderColor = cdBorder.open();
 	              }
 	            });
 	        
+	          /**
+               * Adds listener to border color select button
+               * Author: Marin Maksutaj
+               */
 	          buttonFillColor.addListener(SWT.Selection, new Listener() {
 	            public void handleEvent(Event event) {
 	               fillColor = cdFill.open();
@@ -585,7 +694,10 @@ public class LilLexiUI
 	      buttonOK.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 	      
 	      
-          
+	      /**
+           * Adds listener to input field
+           * Author: Shyambhavi
+           */
 	      text.addListener(SWT.Modify, new Listener() {
 	        public void handleEvent(Event event) {
 	          try {
@@ -597,6 +709,10 @@ public class LilLexiUI
 	        }
 	      });
 	      
+	      /**
+           * Adds listener to ok button
+           * Author: Marin Maksutaj
+           */
 
 	      buttonOK.addListener(SWT.Selection, new Listener() {
 	        public void handleEvent(Event event) {
@@ -604,7 +720,10 @@ public class LilLexiUI
 	        }
 	      });
 
-	      
+	      /**
+           * Adds listener to shell
+           * Author: Shyambhavi
+           */
 	      shell.addListener(SWT.Traverse, new Listener() {
 	        public void handleEvent(Event event) {
 	          if(event.detail == SWT.TRAVERSE_ESCAPE)
